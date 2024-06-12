@@ -36,9 +36,9 @@ const UserDetails = styled(Box)(({ theme }) => ({
 
 const UserInfo = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
 }));
 
 const UserDetailsSection = styled(Box)(({ theme }) => ({
@@ -50,27 +50,34 @@ const UploadButton = styled("input")({
 });
 
 const HoverIconButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
+  position: "absolute",
   bottom: 0,
   right: 0,
-  backgroundColor: 'white',
-  borderRadius: '50%',
-  padding: '4px',
-  '&:hover': {
+  backgroundColor: "white",
+  borderRadius: "50%",
+  padding: "4px",
+  "&:hover": {
     backgroundColor: theme.palette.primary.main,
-    color: 'white',
+    color: "white",
   },
 }));
 
 const MyProfile = () => {
-  const { userProfile, userRole, updateUserProfile } = useContext(UserDetailsContext);
+  const { userProfile, userRole, updateUserProfile } =
+    useContext(UserDetailsContext);
 
   const [profileImage, setProfileImage] = useState(null);
   const [newProfileImage, setNewProfileImage] = useState(null); // New profile image in memory
   const [editMode, setEditMode] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-  const [newFirstName, setNewFirstName] = useState(userProfile?.firstName || '');
-  const [newLastName, setNewLastName] = useState(userProfile?.lastName || '');
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const [newFirstName, setNewFirstName] = useState(
+    userProfile?.firstName || ""
+  );
+  const [newLastName, setNewLastName] = useState(userProfile?.lastName || "");
 
   // Store initial values to reset on cancel
   const initialProfileImage = userProfile?.imageUrl;
@@ -121,10 +128,18 @@ const MyProfile = () => {
       });
       updateUserProfile(response.data);
       setEditMode(false);
-      setSnackbar({ open: true, message: "Profile updated successfully", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Profile updated successfully",
+        severity: "success",
+      });
     } catch (error) {
       console.error("Failed to update profile", error);
-      setSnackbar({ open: true, message: "Failed to update profile", severity: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to update profile",
+        severity: "error",
+      });
     }
   };
 
@@ -152,12 +167,17 @@ const MyProfile = () => {
   }
 
   const { username } = userProfile;
-  const fullName = newFirstName && newLastName ? `${newFirstName} ${newLastName}` : newFirstName || newLastName || username || "";
+  const fullName =
+    newFirstName && newLastName
+      ? `${newFirstName} ${newLastName}`
+      : newFirstName || newLastName || username || "";
 
   return (
     <ProfileCard>
       <UserDetails>
-        <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <Box
+          sx={{ position: "relative", display: "flex", alignItems: "center" }}
+        >
           <UserAvatar
             userName={fullName}
             userImage={profileImage || userProfile?.imageUrl}

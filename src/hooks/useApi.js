@@ -3,19 +3,20 @@ import axios from 'axios';
 import keycloak from '../config/keycloak';
 
 // Create an Axios instance
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:9000',
-    headers: {
-        "Access-Control-Allow-Origin": "*",
-    }
-});
+const axiosInstance = axios.create({});
 
 // Set up an Axios interceptor to include the token from localStorage
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            // Check if the token is expired
+            if (keycloak.isTokenExpired()) {
+                // Redirect the user to the Keycloak login page
+                keycloak.login();
+            } else {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         return config;
     },
@@ -23,29 +24,6 @@ axiosInstance.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
-// Handle token expiration and refresh
-axiosInstance.interceptors.response.use(
-    response => response,
-    async (error) => {
-        const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-            try {
-                // Refresh the token using Keycloak
-                await keycloak.updateToken(30); // Update token if it's about to expire in the next 30 seconds
-                localStorage.setItem('token', keycloak.token);
-                originalRequest.headers['Authorization'] = `Bearer ${keycloak.token}`;
-                return axiosInstance(originalRequest);
-            } catch (refreshError) {
-                console.error('Token refresh error:', refreshError);
-                keycloak.login(); // Redirect to login if refresh fails
-            }
-        }
-        return Promise.reject(error);
-    }
-);
-
 
 const useApi = () => {
     const [loading, setLoading] = useState(false);

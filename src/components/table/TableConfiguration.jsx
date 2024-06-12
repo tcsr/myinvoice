@@ -46,15 +46,16 @@ const TableConfiguration = ({
     onGenerateInvoice,
     onDeleteInvoice,
     showGenerateDeleteButtons,
-    showActionButtons
+    showActionButtons,
+    showInvoiceMetrics
 }) => {
 
     const table = useMaterialReactTable({
         columns,
         data,
         manualPagination: true,
-        manualFiltering: true,
-        manualSorting: true,
+        manualFiltering: false,
+        manualSorting: false,
         rowCount,
         enableStickyHeader: true,
         enableRowSelection: true,
@@ -131,12 +132,13 @@ const TableConfiguration = ({
                         onGenerateInvoice={onGenerateInvoice}
                         onDeleteInvoice={onDeleteInvoice}
                         showGenerateDeleteButtons={showGenerateDeleteButtons}
+                        showInvoiceMetrics = {showInvoiceMetrics}
                     />
                 );
                 TopToolbarCustomActions.displayName = 'TopToolbarCustomActions';
                 return TopToolbarCustomActions;
             },
-            [heading, onGenerateInvoice, onDeleteInvoice, showGenerateDeleteButtons]
+            [heading, onGenerateInvoice, onDeleteInvoice, showGenerateDeleteButtons, showInvoiceMetrics]
         ),
         renderToolbarInternalActions: useMemo(
             () => {

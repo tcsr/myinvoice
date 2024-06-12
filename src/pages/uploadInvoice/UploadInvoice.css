@@ -1,29 +1,42 @@
-.upload-col{
-    height: 100vh;
+.parent-container {
+  /* margin:-10px; */
+ /* background-color: #FFFFFF; */
 }
-.invoice-container {
-  background-color: #FAFAFA;
-  padding: 3px;
+.new-invoice-container {
+  padding: 1px;
   width: 100%;
+  display: flex;
+  align-items: flex-start; /* Align text at the top */
 }
 
-.invoice-title {
+.new-invoice-title {
   color: #000;
   font-size: 24px;
   font-weight: 400;
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
 }
-
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 .flex-container {
   display: flex;
   justify-content: space-between;
   gap: 18px;
+  /* background-color: #FFFFFF; */
+  width: 100%; /* Ensure the container takes full width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
 }
 
 .flex-item {
   flex: 3.8;
 }
 
-.upload-title {
+.upload-invoice-title {
   color: #05353D;
   font-size: 20px;
   font-weight: 400;
@@ -191,3 +204,53 @@ padding: 1rem 0.2rem !important;
   display: none;
 }
 
+.p-field {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-error {
+  color: red;
+  font-size: 12px;
+  margin-top: 0.5rem;
+  text-align: left !important;
+}
+
+.p-error-message {
+  text-align: left;
+}
+
+
+.p-invalid {
+  border-color: red !important;
+}
+
+/* @media (max-width: 600px) {
+  .p-field {
+    padding: 0 1rem;
+  }
+} */
+.accordion-container{
+border-bottom-color: #E0E0E0;
+border-bottom-width: 1;
+border-bottom-style: solid;
+justify-content: space-between;
+display: flex;
+align-items: center;
+cursor: pointer;
+}
+.accordion-title-text{
+  color: #168AAD;
+  font-size: 16;
+  font-weight: 400;
+}
+
+.expanded-container{
+display: flex;
+margin-top: 5;
+justify-content: space-between;
+gap: 10px;
+flex-wrap: wrap;
+}

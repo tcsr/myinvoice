@@ -28,6 +28,7 @@ const MainTableComponent = ({
     setGlobalFilter,
     showGenerateDeleteButtons,
     showActionButtons,
+    showInvoiceMetrics,
     fetchData // A function prop to refetch data
 }) => {
     const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -77,7 +78,6 @@ const MainTableComponent = ({
             invoiceValue: true,
             irbmResponse: true,
         });
-        setGlobalFilter('');
         // Reset the row selection state
         table.setState((prevState) => ({
             ...prevState,
@@ -184,6 +184,7 @@ const MainTableComponent = ({
         isColumnChooserOpen,
         showGenerateDeleteButtons,
         showActionButtons,
+        showInvoiceMetrics,
         onGenerateInvoice: (selectedRows) => {
             setSelectedRows(selectedRows);
             handleGenerateInvoice();

@@ -102,6 +102,10 @@ a {
   font-size: 14px;
 }
 
+.page-header {
+  font-weight: 700;
+}
+
 .p-calendar-w-btn .p-datepicker-trigger.p-button {
   background-color: none !important;
 }
@@ -493,16 +497,4 @@ padding: 25px;
   box-shadow: none !important;
   border-radius: 2rem !important;
   border: none !important;
-}
-
-.disabled-date {
-  cursor: not-allowed;
-  pointer-events: none;
-  color: #ccc; /* Gray out the text */
-  background-color: #f9f9f9; /* Light gray background */
-}
-
-.p-datepicker .p-datepicker-calendar td.disabled-date span {
-  color: #ccc; /* Ensure text color is gray */
-  background-color: #f9f9f9; /* Ensure background color is light gray */
 }

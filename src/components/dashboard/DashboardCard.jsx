@@ -6,7 +6,15 @@ import removeoutline from "../../assets/file-document-remove-outline.svg";
 import serveroutline from "../../assets/server-outline.svg";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import useApi from "../../hooks/useApi";
-import { Box, Typography, Tooltip, Divider, Skeleton, Chip, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Tooltip,
+  Divider,
+  Skeleton,
+  Chip,
+  IconButton,
+} from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/system";
 import dayjs from "dayjs";
@@ -22,7 +30,8 @@ const SourceSystemTodayTooltip = ({ data }) => (
         justifyContent: "space-between",
       }}
     >
-      <span>In Queue:</span> <span style={{ paddingLeft: "8px" }}>{data.inQueue || 0}</span>
+      <span>In Queue:</span>{" "}
+      <span style={{ paddingLeft: "8px" }}>{data.inQueue || 0}</span>
     </Typography>
     <Typography
       variant="body2"
@@ -32,7 +41,8 @@ const SourceSystemTodayTooltip = ({ data }) => (
         marginBottom: "8px",
       }}
     >
-      <span>Source System:</span> <span style={{ paddingLeft: "8px" }}>{data.sourceSystem || 0}</span>
+      <span>Source System:</span>{" "}
+      <span style={{ paddingLeft: "8px" }}>{data.sourceSystem || 0}</span>
     </Typography>
     <Typography
       variant="body2"
@@ -67,7 +77,8 @@ const SourceSystemThisMonthTooltip = ({ data }) => (
         justifyContent: "space-between",
       }}
     >
-      <span>In Queue:</span> <span style={{ paddingLeft: "8px" }}>{data.inQueue || 0}</span>
+      <span>In Queue:</span>{" "}
+      <span style={{ paddingLeft: "8px" }}>{data.inQueue || 0}</span>
     </Typography>
     <Typography
       variant="body2"
@@ -77,7 +88,8 @@ const SourceSystemThisMonthTooltip = ({ data }) => (
         marginBottom: "8px",
       }}
     >
-      <span>Source System:</span> <span style={{ paddingLeft: "8px" }}>{data.sourceSystem || 0}</span>
+      <span>Source System:</span>{" "}
+      <span style={{ paddingLeft: "8px" }}>{data.sourceSystem || 0}</span>
     </Typography>
     <Typography
       variant="body2"
@@ -87,7 +99,8 @@ const SourceSystemThisMonthTooltip = ({ data }) => (
         marginBottom: "8px",
       }}
     >
-      <span>Manually added:</span> <span style={{ paddingLeft: "8px" }}>{data.manuallyAdded || 0}</span>
+      <span>Manually added:</span>{" "}
+      <span style={{ paddingLeft: "8px" }}>{data.manuallyAdded || 0}</span>
     </Typography>
     <Divider sx={{ borderColor: "#FFFFFF", marginY: "8px" }} />
     <Typography
@@ -113,18 +126,44 @@ const CustomTooltip = styled(({ className, ...props }) => (
 });
 
 const cardStyles = {
-  Summary: { backgroundColor: "#EBECEE", iconBgColor: "#E0E0E0", icon: chartbox },
-  Success: { backgroundColor: "#DFF3CD", iconBgColor: "#BFE79C", icon: filedoc },
-  Rejected: { backgroundColor: "#FFE5EC", iconBgColor: "#FFC2D1", icon: removeoutline },
-  Error: { backgroundColor: "#F5EFFF", iconBgColor: "#E5D9F2", icon: filedocalert },
-  Source: { backgroundColor: "#B7E7F6", iconBgColor: "#92DBF2", icon: serveroutline }
+  Summary: {
+    backgroundColor: "#EBECEE",
+    iconBgColor: "#E0E0E0",
+    icon: chartbox,
+  },
+  Success: {
+    backgroundColor: "#DFF3CD",
+    iconBgColor: "#BFE79C",
+    icon: filedoc,
+  },
+  Rejected: {
+    backgroundColor: "#FFE5EC",
+    iconBgColor: "#FFC2D1",
+    icon: removeoutline,
+  },
+  Errors: {
+    backgroundColor: "#F5EFFF",
+    iconBgColor: "#E5D9F2",
+    icon: filedocalert,
+  },
+  Source: {
+    backgroundColor: "#B7E7F6",
+    iconBgColor: "#92DBF2",
+    icon: serveroutline,
+  },
 };
 
 const fallbackData = [
-  { id: 1, title: "IRBM Overall Summary", code: "Summary", today: 0, thismonth: 0 },
+  {
+    id: 1,
+    title: "IRBM Overall Summary",
+    code: "Summary",
+    today: 0,
+    thismonth: 0,
+  },
   { id: 2, title: "IRBM Success", code: "Success", today: 0, thismonth: 0 },
   { id: 3, title: "IRBM Rejected", code: "Rejected", today: 0, thismonth: 0 },
-  { id: 4, title: "IRBM Errors", code: "Error", today: 0, thismonth: 0 },
+  { id: 4, title: "IRBM Errors", code: "Errors", today: 0, thismonth: 0 },
   { id: 5, title: "Source System", code: "Source", today: 0, thismonth: 0 },
 ];
 
@@ -137,7 +176,9 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
       const queryParams = `supplierCode=${selectedSupplier.code}&startDate=${startDate}&endDate=${endDate}`;
 
       try {
-        const data = await get(`${API_ENDPOINTS.GET_CARDS_DETAILS}?${queryParams}`);
+        const data = await get(
+          `${API_ENDPOINTS.GET_CARDS_DETAILS}?${queryParams}`
+        );
         setCardDetails(data && data.length > 0 ? data : fallbackData);
       } catch (error) {
         console.log(error);
@@ -194,10 +235,14 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
   );
 
   const isSingleMonth = (startDate, endDate) => {
-    return dayjs(startDate).month() === dayjs(endDate).month() && dayjs(startDate).year() === dayjs(endDate).year();
+    return (
+      dayjs(startDate).month() === dayjs(endDate).month() &&
+      dayjs(startDate).year() === dayjs(endDate).year()
+    );
   };
 
-  const showTodayAndThisMonth = startDate && endDate && isSingleMonth(startDate, endDate);
+  const showTodayAndThisMonth =
+    startDate && endDate && isSingleMonth(startDate, endDate);
 
   if (loading) {
     return renderSkeleton();
@@ -213,7 +258,10 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
 
         return (
           <div key={item.id} className="col">
-            <div className="card mb-0" style={{ backgroundColor: styles.backgroundColor }}>
+            <div
+              className="card mb-0"
+              style={{ backgroundColor: styles.backgroundColor }}
+            >
               <div className="flex justify-content-between mb-1">
                 <div
                   className="flex align-items-center justify-content-center border-round"
@@ -237,17 +285,25 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                 <span className="block text-700 my-3">{item.title}</span>
               </div>
               <div style={{ display: "flex" }}>
-                {item.code === 'Source' ? (
+                {item.code === "Source" ? (
                   <>
-                    <CustomTooltip title={<SourceSystemTodayTooltip data={item?.todayDetails || {}} />}>
+                    <CustomTooltip
+                      title={
+                        <SourceSystemTodayTooltip
+                          data={item?.todayDetails || {}}
+                        />
+                      }
+                    >
                       <div style={{ flexDirection: "row" }}>
                         <div
                           className="text-900 text-xl"
                           style={{ fontWeight: "bold" }}
                         >
-                          {item.today.toString().padStart(2, '0')}
+                          {item.today.toString().padStart(2, "0")}
                         </div>
-                        {showTodayAndThisMonth && <span className="text-700">Today</span>}
+                        {showTodayAndThisMonth && (
+                          <span className="text-700">Today</span>
+                        )}
                       </div>
                     </CustomTooltip>
                     <div
@@ -257,15 +313,23 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                         marginRight: "1.5rem",
                       }}
                     ></div>
-                    <CustomTooltip title={<SourceSystemThisMonthTooltip data={item?.thisMonthDetails || {}} />}>
+                    <CustomTooltip
+                      title={
+                        <SourceSystemThisMonthTooltip
+                          data={item?.thisMonthDetails || {}}
+                        />
+                      }
+                    >
                       <div style={{ flexDirection: "row" }}>
                         <div
                           className="text-900 text-xl"
                           style={{ fontWeight: "bold" }}
                         >
-                          {item.thismonth.toString().padStart(2, '0')}
+                          {item.thismonth.toString().padStart(2, "0")}
                         </div>
-                        {showTodayAndThisMonth && <span className="text-700">This month</span>}
+                        {showTodayAndThisMonth && (
+                          <span className="text-700">This month</span>
+                        )}
                       </div>
                     </CustomTooltip>
                   </>
@@ -276,9 +340,11 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                         className="text-900 text-xl"
                         style={{ fontWeight: "bold" }}
                       >
-                        {item.today.toString().padStart(2, '0')}
+                        {item.today.toString().padStart(2, "0")}
                       </div>
-                      {showTodayAndThisMonth && <span className="text-700">Today</span>}
+                      {showTodayAndThisMonth && (
+                        <span className="text-700">Today</span>
+                      )}
                     </div>
                     <div
                       style={{
@@ -292,16 +358,27 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                         className="text-900 text-xl"
                         style={{ fontWeight: "bold" }}
                       >
-                        {item.thismonth.toString().padStart(2, '0')}
+                        {item.thismonth.toString().padStart(2, "0")}
                       </div>
-                      {showTodayAndThisMonth && <span className="text-700">This month</span>}
+                      {showTodayAndThisMonth && (
+                        <span className="text-700">This month</span>
+                      )}
                     </div>
                   </>
                 )}
               </div>
               {error && (
-                <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-                  <Chip label="Failed to load data" style={{ backgroundColor: "rgb(255, 194, 209)" }} />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "10px",
+                  }}
+                >
+                  <Chip
+                    label="Failed to load data"
+                    style={{ backgroundColor: "rgb(255, 194, 209)" }}
+                  />
                 </div>
               )}
             </div>

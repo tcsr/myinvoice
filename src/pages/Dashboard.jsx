@@ -44,10 +44,14 @@ const Dashboard = () => {
 
   const setDefaultDateRange = () => {
     const currentDate = new Date();
-    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const firstDay = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
     setDate([firstDay, currentDate]);
-    setStartDate(dayjs(firstDay).format('YYYY-MM-DD'));
-    setEndDate(dayjs(currentDate).format('YYYY-MM-DD'));
+    setStartDate(dayjs(firstDay).format("YYYY-MM-DD"));
+    setEndDate(dayjs(currentDate).format("YYYY-MM-DD"));
     setViewDate(firstDay); // Set the view date to the first day of the current month
   };
 
@@ -57,9 +61,9 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (date[0] && date[1]) {
-      setStartDate(dayjs(date[0]).format('YYYY-MM-DD'));
-      setEndDate(dayjs(date[1]).format('YYYY-MM-DD'));
+    if (date && date[0] && date[1]) {
+      setStartDate(dayjs(date[0]).format("YYYY-MM-DD"));
+      setEndDate(dayjs(date[1]).format("YYYY-MM-DD"));
     }
   }, [date]);
 
@@ -82,9 +86,9 @@ const Dashboard = () => {
     );
   };
 
-    return (
+  return (
     <>
-      <div className="text-700 mb-2">Dashboard</div>
+      <div className="mb-2 page-header">Dashboard</div>
       <div
         className="mb-3"
         style={{ display: "flex", justifyContent: "space-between" }}
@@ -124,7 +128,7 @@ const Dashboard = () => {
               fontWeight: "100",
               letterSpacing: "1px",
               color: "#4b5563",
-              border: "1px solid rgba(0, 0, 0, 0.38)"
+              border: "1px solid rgba(0, 0, 0, 0.38)",
             }}
             onClick={reset} // Call reset method
           >
@@ -146,9 +150,18 @@ const Dashboard = () => {
           </Button>
         </div>
       </div>
-      <DashboardCard selectedSupplier={selectedSupplier} startDate={startDate} endDate={endDate} />
+      <DashboardCard
+        selectedSupplier={selectedSupplier}
+        startDate={startDate}
+        endDate={endDate}
+      />
       <div className="m-1">
-        <LatestInvoiceList heading={"Recently Generated"} selectedSupplier={selectedSupplier} startDate={startDate} endDate={endDate} />
+        <LatestInvoiceList
+          heading={"Recently Generated"}
+          selectedSupplier={selectedSupplier}
+          startDate={startDate}
+          endDate={endDate}
+        />
       </div>
     </>
   );

@@ -4,16 +4,23 @@ import useApi from "../../hooks/useApi";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import MainTableComponent from "../table/MainTableComponent";
 import getStatusChip from "../../utils/getStatusChip";
-import { truncateText } from '../../utils/index';
+import { truncateText } from "../../utils/index";
 
-const LatestInvoiceList = ({ heading, selectedSupplier, startDate, endDate }) => {
+const LatestInvoiceList = ({
+  heading,
+  selectedSupplier,
+  startDate,
+  endDate,
+  showGenerateDeleteButtons = false,
+  showInvoiceMetrics
+}) => {
   const [data, setData] = useState([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -45,11 +52,15 @@ const LatestInvoiceList = ({ heading, selectedSupplier, startDate, endDate }) =>
         endDate,
         ...(globalFilter && { searchTerm: globalFilter }),
         ...(sorting.length > 0 && { sorting: JSON.stringify(sorting) }),
-        ...(columnFilters.length > 0 && { filters: JSON.stringify(columnFilters) }),
+        ...(columnFilters.length > 0 && {
+          filters: JSON.stringify(columnFilters),
+        }),
       });
 
       try {
-        const response = await get(`${API_ENDPOINTS.GET_INVOICE_LIST}?${queryParams}`);
+        const response = await get(
+          `${API_ENDPOINTS.GET_INVOICE_LIST}?${queryParams}`
+        );
         setData(response.content);
         setRowCount(response.totalElements);
         setIsError(false);
@@ -95,11 +106,10 @@ const LatestInvoiceList = ({ heading, selectedSupplier, startDate, endDate }) =>
             }}
             onClick={() => handleRowClick(row.id)}
           >
-            <a
-              style={{ cursor: "pointer", color: "#1E6091" }}
-            >
+            {truncateText(cell?.getValue(), 40)}
+            {/* <a style={{ cursor: "pointer", color: "#1E6091" }}>
               {truncateText(cell?.getValue(), 40)}
-            </a>
+            </a> */}
           </Box>
         ),
       },
@@ -151,7 +161,7 @@ const LatestInvoiceList = ({ heading, selectedSupplier, startDate, endDate }) =>
     generatedNumber: "Generated Number",
     invoiceType: "Invoice Type",
     invoiceValue: "Invoice Value",
-    irbmResponse: "IRBM Response"
+    irbmResponse: "IRBM Response",
   };
 
   return (
@@ -176,7 +186,8 @@ const LatestInvoiceList = ({ heading, selectedSupplier, startDate, endDate }) =>
         requiredColumns={requiredColumns}
         setGlobalFilter={setGlobalFilter}
         fetchData={fetchLatestInvoiceDetails}
-        showGenerateDeleteButtons={false}
+        showGenerateDeleteButtons={showGenerateDeleteButtons}
+        showInvoiceMetrics={showInvoiceMetrics}
         showActionButtons={false}
       />
     </>

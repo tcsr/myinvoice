@@ -19,7 +19,9 @@ const ColumnChooser = ({ table, isOpen, onClose, handleSave, showSelectDeselectA
     const [originalColumnsState, setOriginalColumnsState] = useState([]);
 
     useEffect(() => {
-        const columns = table.getAllColumns().map(column => ({
+        const columns = table.getAllColumns().
+        filter(col => !['mrt-row-expand', 'mrt-row-select', 'mrt-row-actions'].includes(col.id))
+        .map(column => ({
             id: column.id,
             header: column.columnDef.header,
             enableHiding: column.getIsVisible(),

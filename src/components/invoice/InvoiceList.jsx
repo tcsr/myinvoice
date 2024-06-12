@@ -50,7 +50,6 @@ const InvoiceList = ({ heading }) => {
       setRowCount(response.totalElements); // Assuming totalElements is returned from the API
       setIsError(false);
     } catch (error) {
-      console.log(error);
       setIsError(true);
     } finally {
       setIsLoading(false);
