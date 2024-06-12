@@ -1,0 +1,508 @@
+@font-face {
+  font-family: "GilroyRegular";
+  src: local("GilroyRegular"),
+    url("./assets/font/Gilroy/Gilroy-Regular.otf") format("opentype");
+  font-weight: normal;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: GilroyRegular !important;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  color: var(--text-color);
+  background-color: #fafafa !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.layout-wrapper {
+  min-height: 100vh;
+}
+
+.p-menubar {
+  border: none !important;
+}
+
+.layout-main-container {
+  margin: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 4rem !important;
+  padding-bottom: 3.5rem !important;
+}
+
+.css-hyum1k-MuiToolbar-root {
+  min-height: 3.5rem !important;
+}
+
+.css-hyum1k-MuiToolbar-root {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+.menu-button-style {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 2.5rem !important;
+  word-wrap: break-word !important;
+  border-bottom-width: 4px !important;
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--card-shadow);
+  border-radius: 5px;
+}
+
+.p-tag {
+  border-radius: 2rem !important;
+  min-width: 4rem;
+}
+
+.p-card-content {
+  padding: 0 !important;
+}
+
+.p-datatable .p-datatable-header {
+  padding: 0.5rem !important;
+}
+
+.p-inputtext {
+  /* padding: 0.75rem 0.75rem !important; */
+}
+
+.top-nav-bar {
+  box-shadow: none !important;
+  border: 1px solid #e8efef;
+}
+
+.layout-footer {
+  display: flex;
+  align-items: center;
+  padding-top: 0.5rem;
+  letter-spacing: 1px;
+  color: #555555;
+  font-size: 14px;
+}
+
+.p-calendar-w-btn .p-datepicker-trigger.p-button {
+  background-color: none !important;
+}
+
+.custom-table {
+  font-size: 14px !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td,
+.p-datatable .p-datatable-thead>tr>th {
+  padding: 0.25rem !important;
+}
+
+.fs-medium {
+  font-size: medium !important;
+}
+
+.fs-small {
+  font-size: small !important;
+}
+
+.btn-primary-outline {
+  border: 1px solid #9e9e9e !important;
+}
+
+.btn-primary {
+  background-color: #1e6091 !important;
+}
+
+.p-dropdown {
+  /* border: none !important;
+  border-radius: 2rem !important; */
+}
+
+.p-datepicker-trigger {
+  margin-right: 0.5rem !important;
+  color: #9e9e9e !important;
+  border-radius: 2rem !important;
+}
+
+.MuiTableContainer-root {
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.table-header {
+  font-weight: 400;
+}
+
+.MuiChip-label {
+  padding-left: 10px !important;
+  padding-right: 5px !important;
+}
+
+.MuiMenuItem-root {
+  height: 3.5rem !important;
+}
+
+/* Upload Invoice */
+
+.upload-col {
+  height: 100vh;
+}
+
+.invoice-container {
+  background-color: #fafafa;
+  padding: 3px;
+  width: 100%;
+}
+
+.invoice-title {
+  color: #000;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.flex-item {
+  flex: 3.8;
+}
+
+.upload-title {
+  color: #05353d;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* .border-dashed {
+padding: 25px;
+} */
+
+.text-center {
+  text-align: center;
+}
+
+.text-center-large {
+  text-align: center;
+  font-size: 16px;
+  color: #000;
+}
+
+.text-center-small {
+  text-align: center;
+  font-size: 12px;
+  color: #168aad;
+}
+
+.instruction-title {
+  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.instruction-text {
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.border-dashed {
+  border: 1px dashed #000;
+  padding: 25px;
+}
+
+.center-image {
+  display: block;
+  /* Make it behave like a block-level element */
+  margin: 0 auto;
+  /* Center horizontally */
+}
+
+.custom-calendar .p-datepicker-trigger {
+  color: #05353d !important;
+}
+
+.input-with-checkmark {
+  position: relative;
+  display: inline-block;
+}
+
+.input-with-checkmark .p-inputtext {
+  padding-right: 30px;
+  /* Adjust padding to make space for the icon */
+}
+
+.input-with-checkmark .checkmark-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #00a865;
+  /* Color of the checkmark */
+  pointer-events: none;
+}
+
+.data-table-styles tr th,
+.data-table-styles tr td {
+  padding: 1rem 0.2rem !important;
+}
+
+.data-table-styles tr th {
+  font-weight: 400;
+  font-size: 14px;
+  background: #fff;
+}
+
+.flex-container-invoice-details {
+  display: flex;
+  margin-top: 5px;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.flex-item-invoice-details {
+  flex: 1;
+}
+
+.label {
+  color: #212121;
+  font-size: 14px;
+}
+
+.input-field {
+  width: 290px;
+}
+
+.input-field-digital-sign {
+  width: 290px;
+  border: none;
+  /* Remove border for input field */
+  box-shadow: none;
+}
+
+.p-field {
+  display: flex;
+  align-items: center;
+}
+
+.custom-input {
+  position: relative;
+  width: 290px;
+  border: 1px solid #ccc;
+  /* Add border here */
+  border-radius: 4px;
+  /* Optional: add border radius */
+  overflow: hidden;
+}
+
+.custom-input input[type="text"] {
+  width: calc(100% - 60px);
+  /* Adjust width to accommodate the browse button */
+  border: none;
+  /* Remove default border */
+  padding-right: 60px;
+  /* Ensure padding does not affect the browse button */
+  height: 100%;
+}
+
+.custom-input input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-input::after {
+  content: "Browse";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-left: 1px solid #ccc;
+  pointer-events: none;
+  border-top-right-radius: 4px;
+  /* Match border radius of parent */
+  border-bottom-right-radius: 4px;
+  color: #616161;
+  /* Change text color */
+  font-size: 14px;
+  /* Change font size */
+}
+
+.upload-btn {
+  margin-left: 10px;
+}
+
+.transparent-icon {
+  color: #616161;
+}
+
+.Mui-selected {
+  background-color: #1e6091 !important;
+  color: #ffffff !important;
+}
+
+.MuiButton-root {
+  border-radius: 8px;
+}
+
+.pi {
+  font-family: 'primeicons' !important;
+}
+
+/* Calendar styles */
+
+.custom-calendar {
+  border-radius: 2rem !important;
+  flex-direction: row-reverse !important;
+}
+
+.custom-calendar .p-datepicker {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-calendar .p-datepicker-header {
+  background-color: #123456;
+  /* Custom color as per image */
+  color: #ffffff;
+  /* White text */
+}
+
+.custom-calendar .p-datepicker-title {
+  font-size: 1.5rem;
+}
+
+.custom-calendar .p-datepicker-group {
+  border: none;
+}
+
+.custom-calendar .p-datepicker-group-header {
+  background-color: #123456;
+  /* Custom color as per image */
+  color: #ffffff;
+  /* White text */
+}
+
+.custom-calendar .p-datepicker-group-header button {
+  color: #ffffff;
+  /* White arrows */
+}
+
+.custom-calendar .p-datepicker-month {
+  display: flex;
+  justify-content: space-around;
+}
+
+.custom-calendar .p-datepicker-next,
+.custom-calendar .p-datepicker-prev {
+  color: #ffffff;
+  /* White arrows */
+}
+
+.custom-calendar .p-datepicker-table {
+  width: 100%;
+}
+
+.custom-calendar .p-datepicker-today {
+  background-color: #ffffff;
+  /* Today's date background */
+  color: #123456;
+  /* Custom color for today's date */
+}
+
+.custom-calendar .p-datepicker-other-month .p-datepicker-cell {
+  color: rgba(0, 0, 0, 0.38);
+  /* Light grey for other months */
+}
+
+.custom-calendar .p-datepicker-day.p-highlight {
+  background-color: #123456;
+  /* Custom color for selected date */
+  color: #ffffff;
+  /* White text */
+}
+
+.custom-calendar .p-datepicker-day:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  /* Light grey hover effect */
+}
+
+.mrt-table-row-expand-toggle {
+  display: none;
+}
+
+.mrt-expand-cell {
+  display: none !important;
+}
+
+.custom-calendar .p-calendar .p-inputtext {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.custom-calendar .p-datepicker-trigger {
+  margin-right: 0 !important;
+}
+
+.custom-calendar .p-button.p-button-icon-only {
+  width: 2rem;
+  padding-left: 17px;
+}
+
+.custom-calendar .p-calendar .p-datepicker-trigger {
+  position: absolute;
+  left: 0.75rem;
+  margin-right: 0 !important;
+}
+
+.p-calendar:not(.p-calendar-disabled).p-focus>.p-inputtext {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: none !important;
+  border-radius: 2rem !important;
+  border: none !important;
+}
+
+.disabled-date {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: #ccc; /* Gray out the text */
+  background-color: #f9f9f9; /* Light gray background */
+}
+
+.p-datepicker .p-datepicker-calendar td.disabled-date span {
+  color: #ccc; /* Ensure text color is gray */
+  background-color: #f9f9f9; /* Ensure background color is light gray */
+}
