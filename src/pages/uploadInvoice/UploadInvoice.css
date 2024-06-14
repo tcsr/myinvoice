@@ -136,10 +136,10 @@ padding: 1rem 0.2rem !important;
   box-shadow: none;
 }
 
-.p-field {
+/* .p-field {
   display: flex;
   align-items: center;
-}
+} */
 .custom-input {
   position: relative;
   width: 290px;
@@ -243,8 +243,8 @@ cursor: pointer;
 }
 .accordion-title-text{
   color: #168AAD;
-  font-size: 16;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .expanded-container{
@@ -254,3 +254,125 @@ justify-content: space-between;
 gap: 10px;
 flex-wrap: wrap;
 }
+
+.section-title {
+  color: #0057b8;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.summary-section {
+  margin-left: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.summary-label {
+  color: #666;
+  font-weight: bold;
+}
+
+.summary-value {
+  color: #000;
+}
+
+.p-field {
+  margin-bottom: 20px;
+}
+
+.p-error {
+  font-size: 12px;
+  color: red;
+}
+
+.p-invalid {
+  border-color: red;
+}
+
+.payment-info-section, .summary-section {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.payment-info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.payment-info-item {
+  flex: 1 1 calc(50% - 20px);
+  margin-bottom: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.summary-value {
+  color: #000;
+}
+
+.equal-width {
+  flex: 1;
+  min-width: 0; /* Ensure flexbox items shrink properly */
+}
+
+.summary-section {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #000;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-label {
+  font-weight: bold;
+  color: #212121;
+}
+
+.summary-value {
+  color: #000;
+}
+

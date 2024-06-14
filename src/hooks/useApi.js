@@ -10,13 +10,7 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if (token) {
-            // Check if the token is expired
-            if (keycloak.isTokenExpired()) {
-                // Redirect the user to the Keycloak login page
-                keycloak.login();
-            } else {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },

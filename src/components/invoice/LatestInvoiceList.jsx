@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import MainTableComponent from "../table/MainTableComponent";
 import getStatusChip from "../../utils/getStatusChip";
 import { truncateText } from "../../utils/index";
+import TableProvider from "../../context/TableContext";
 
 const LatestInvoiceList = ({
   heading,
@@ -12,6 +13,7 @@ const LatestInvoiceList = ({
   startDate,
   endDate,
   showGenerateDeleteButtons = false,
+  showActionButtons = false,
   showInvoiceMetrics
 }) => {
   const [data, setData] = useState([]);
@@ -65,7 +67,6 @@ const LatestInvoiceList = ({
         setRowCount(response.totalElements);
         setIsError(false);
       } catch (error) {
-        console.log(error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -75,7 +76,9 @@ const LatestInvoiceList = ({
   };
 
   useEffect(() => {
-    fetchLatestInvoiceDetails();
+    if (selectedSupplier && startDate && endDate) {
+      fetchLatestInvoiceDetails();
+    }
   }, [
     selectedSupplier,
     startDate,
@@ -107,9 +110,6 @@ const LatestInvoiceList = ({
             onClick={() => handleRowClick(row.id)}
           >
             {truncateText(cell?.getValue(), 40)}
-            {/* <a style={{ cursor: "pointer", color: "#1E6091" }}>
-              {truncateText(cell?.getValue(), 40)}
-            </a> */}
           </Box>
         ),
       },
@@ -165,7 +165,7 @@ const LatestInvoiceList = ({
   };
 
   return (
-    <>
+    <TableProvider>
       <MainTableComponent
         columns={columns}
         data={data}
@@ -188,9 +188,9 @@ const LatestInvoiceList = ({
         fetchData={fetchLatestInvoiceDetails}
         showGenerateDeleteButtons={showGenerateDeleteButtons}
         showInvoiceMetrics={showInvoiceMetrics}
-        showActionButtons={false}
+        showActionButtons={showActionButtons}
       />
-    </>
+    </TableProvider>
   );
 };
 

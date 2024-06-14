@@ -8,17 +8,19 @@ import KeycloakInit from "./config/KeycloakInit";
 
 const App = () => {
   return (
-    <UserDetailsProvider>
-      <Router>
-        <CssBaseline />
-        <KeycloakInit />
-        <Header />
-        <div className="border-none layout-main-container">
-          <AppRoutes />
-        </div>
-      </Router>
-      <Footer />
-    </UserDetailsProvider>
+    <>
+      <KeycloakInit />
+      <UserDetailsProvider>
+        <Router>
+          <CssBaseline />
+          <Header />
+          <div className="border-none layout-main-container">
+            <AppRoutes />
+          </div>
+        </Router>
+        <Footer />
+      </UserDetailsProvider>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import TableConfiguration from './TableConfiguration';
 import { Alert, Snackbar } from '@mui/material';
@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../../api/apiEndpoints';
 import useApi from '../../hooks/useApi';
 import CustomModal from "../../components/CustomModal/CustomModal";
 import CustomGenerateInvoiceModal from "../../components/CustomModal/CustomGenerateInvoiceModal";
+import { HeaderContext } from '../../context/HeaderContext';
 
 const MainTableComponent = ({
     columns,
@@ -48,6 +49,14 @@ const MainTableComponent = ({
     const [generationComplete, setGenerationComplete] = useState(false);
     const [deletionComplete, setDeletionComplete] = useState(false);
     const [error, setError] = useState(null);
+
+    const { refreshDataFlag } = useContext(HeaderContext);
+
+    useEffect(() => {
+        console.log('Refresh triggered');
+        handleGlobalFilterChange('');
+        resetTableState(table);
+      }, [refreshDataFlag]);
 
     useEffect(() => {
         const handler = setTimeout(() => {
