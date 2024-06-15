@@ -1,6 +1,6 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
-import close_icon from "../../assets/close.svg";
-import MotionPlayIcon from "../../assets/motion-play-outline.svg";
+import close_icon from "../../assets/images/close.svg";
+import MotionPlayIcon from "../../assets/images/motion-play-outline.svg";
 
 const TableToolbarActions = ({
   table,

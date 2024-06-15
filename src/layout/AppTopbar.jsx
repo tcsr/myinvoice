@@ -14,7 +14,7 @@ import AccountMenu from "../components/AccountMenu";
 import NavMenu from "../components/NavMenu";
 import AccountSettings from "../components/AccountSettings";
 import { UserDetailsContext } from "../context/UserDetailsContext";
-import Logo from "../assets/einvoice_logo.svg";
+import Logo from "../assets/images/einvoice_logo.svg";
 
 const AppTopbar = () => {
   const navigate = useNavigate();

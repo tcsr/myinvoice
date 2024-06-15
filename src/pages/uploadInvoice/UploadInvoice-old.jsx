@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import filedoc from "../../assets/tray-arrow-up.svg";
+import filedoc from "../../assets/images/tray-arrow-up.svg";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";

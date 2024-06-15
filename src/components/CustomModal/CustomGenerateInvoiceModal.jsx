@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button, Divider, LinearProgress } from "@mui/material";
-import GenerateIcon from "../../assets/generate-icon-invoice.svg";
-import SuccessIcon from "../../assets/delete-sucess.svg";
+import GenerateIcon from "../../assets/images/generate-icon-invoice.svg";
+import SuccessIcon from "../../assets/images/delete-sucess.svg";
 import ErrorIcon from "@mui/icons-material/Error";
 
 

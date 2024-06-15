@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import filedoc from "../../assets/tray-arrow-up.svg";
+import filedoc from "../../assets/images/tray-arrow-up.svg";
 const FileUpload = ({ onFileUpload }) => {
   const [files, setFiles] = useState([]);
   const [uploadComplete, setUploadComplete] = useState(false);

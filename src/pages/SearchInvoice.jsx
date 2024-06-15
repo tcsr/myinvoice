@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import search_icon from "../assets/search_icon.svg";
+import search_icon from "../assets/images/search_icon.svg";
 import { Box, Typography } from "@mui/material";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";

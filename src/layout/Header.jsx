@@ -14,7 +14,7 @@ import AccountMenu from "../components/user/AccountMenu";
 import NavMenu from "../components/navbar/NavMenu";
 import AccountSettings from "../components/user/AccountSettings";
 import { UserDetailsContext } from "../context/UserDetailsContext";
-import Logo from "../assets/einvoice_logo.svg";
+import Logo from "../assets/images/einvoice_logo.svg";
 
 const Header = () => {
   const navigate = useNavigate();

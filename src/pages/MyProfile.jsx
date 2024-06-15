@@ -1,20 +1,23 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import {
   Box,
   Card,
-  Divider,
   Typography,
   Button,
   IconButton,
   Tooltip,
   TextField,
   Snackbar,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { useForm, Controller } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import EmailIcon from "@mui/icons-material/Email";
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import SaveIcon from '@mui/icons-material/Save';
+import ClearIcon from '@mui/icons-material/Clear';
 import { UserDetailsContext } from "../context/UserDetailsContext";
 import UserAvatar from "../components/user/UserAvatar";
 import axios from "axios";
@@ -25,7 +28,7 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
   backgroundColor: "#f9f9f9",
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     width: "95%",
     padding: theme.spacing(2),
   },
@@ -45,7 +48,7 @@ const UserInfo = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     marginLeft: 0,
     alignItems: "center",
     textAlign: "center",
@@ -57,7 +60,7 @@ const EditableFields = styled(Box)(({ theme }) => ({
   gridTemplateColumns: "1fr 1fr",
   gap: theme.spacing(2),
   marginTop: theme.spacing(2),
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     gridTemplateColumns: "1fr",
   },
 }));
@@ -65,6 +68,11 @@ const EditableFields = styled(Box)(({ theme }) => ({
 const UploadButton = styled("input")({
   display: "none",
 });
+
+const AvatarContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  display: "inline-block",
+}));
 
 const HoverIconButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
@@ -81,7 +89,6 @@ const HoverIconButton = styled(IconButton)(({ theme }) => ({
 
 const MyProfile = () => {
   const { userProfile, userRole } = useContext(UserDetailsContext);
-
   const [profileImage, setProfileImage] = useState(null);
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -90,36 +97,30 @@ const MyProfile = () => {
     message: "",
     severity: "success",
   });
-  const [newFirstName, setNewFirstName] = useState("");
-  const [newLastName, setNewLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const [country, setCountry] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [position, setPosition] = useState("");
-  const [department, setDepartment] = useState("");
+
+  const { handleSubmit, control, reset, formState: { errors } } = useForm({
+    mode: 'onChange'
+  });
 
   useEffect(() => {
     if (userProfile) {
       setProfileImage(userProfile.imageUrl);
-      setNewFirstName(userProfile.firstName);
-      setNewLastName(userProfile.lastName);
-      setEmail(userProfile.email);
-      setPhoneNumber(userProfile.phoneNumber || "");
-      setStreet(userProfile.address?.street || "");
-      setCity(userProfile.address?.city || "");
-      setState(userProfile.address?.state || "");
-      setPostalCode(userProfile.address?.postalCode || "");
-      setCountry(userProfile.address?.country || "");
-      setCompanyName(userProfile.company?.name || "");
-      setPosition(userProfile.company?.position || "");
-      setDepartment(userProfile.company?.department || "");
+      reset({
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        phoneNumber: userProfile.phoneNumber || "",
+        street: userProfile.address?.street || "",
+        city: userProfile.address?.city || "",
+        state: userProfile.address?.state || "",
+        postalCode: userProfile.address?.postalCode || "",
+        country: userProfile.address?.country || "",
+        companyName: userProfile.company?.name || "",
+        position: userProfile.company?.position || "",
+        department: userProfile.company?.department || "",
+      });
     }
-  }, [userProfile]);
+  }, [userProfile, reset]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -133,50 +134,15 @@ const MyProfile = () => {
     }
   };
 
-  const handleSaveProfile = async () => {
-    if (
-      !newFirstName ||
-      !newLastName ||
-      !email ||
-      !phoneNumber ||
-      !street ||
-      !city ||
-      !state ||
-      !postalCode ||
-      !country ||
-      !companyName ||
-      !position ||
-      !department
-    ) {
-      setSnackbar({
-        open: true,
-        message: "All fields are required",
-        severity: "error",
-      });
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const formData = new FormData();
-      formData.append("firstName", newFirstName);
-      formData.append("lastName", newLastName);
-      formData.append("email", email);
-      formData.append("phoneNumber", phoneNumber);
-      formData.append("street", street);
-      formData.append("city", city);
-      formData.append("state", state);
-      formData.append("postalCode", postalCode);
-      formData.append("country", country);
-      formData.append("companyName", companyName);
-      formData.append("position", position);
-      formData.append("department", department);
+      const profileData = {
+        ...data,
+        profileImage: newProfileImage ? profileImage : userProfile.imageUrl
+      };
 
-      if (newProfileImage) {
-        formData.append("profileImage", newProfileImage);
-      }
-
-      await axios.put("/api/user/profile", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      await axios.put("/api/user/profile", profileData, {
+        headers: { "Content-Type": "application/json" },
       });
 
       setEditMode(false);
@@ -197,18 +163,20 @@ const MyProfile = () => {
 
   const handleCancelEdit = () => {
     if (userProfile) {
-      setNewFirstName(userProfile.firstName);
-      setNewLastName(userProfile.lastName);
-      setEmail(userProfile.email);
-      setPhoneNumber(userProfile.phoneNumber || "");
-      setStreet(userProfile.address?.street || "");
-      setCity(userProfile.address?.city || "");
-      setState(userProfile.address?.state || "");
-      setPostalCode(userProfile.address?.postalCode || "");
-      setCountry(userProfile.address?.country || "");
-      setCompanyName(userProfile.company?.name || "");
-      setPosition(userProfile.company?.position || "");
-      setDepartment(userProfile.company?.department || "");
+      reset({
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        phoneNumber: userProfile.phoneNumber || "",
+        street: userProfile.address?.street || "",
+        city: userProfile.address?.city || "",
+        state: userProfile.address?.state || "",
+        postalCode: userProfile.address?.postalCode || "",
+        country: userProfile.address?.country || "",
+        companyName: userProfile.company?.name || "",
+        position: userProfile.company?.position || "",
+        department: userProfile.company?.department || "",
+      });
       setProfileImage(userProfile.imageUrl);
       setNewProfileImage(null);
     }
@@ -229,26 +197,47 @@ const MyProfile = () => {
 
   const { username } = userProfile;
   const fullName =
-    newFirstName && newLastName
-      ? `${newFirstName} ${newLastName}`
-      : newFirstName || newLastName || username || "";
+    userProfile.firstName && userProfile.lastName
+      ? `${userProfile.firstName} ${userProfile.lastName}`
+      : userProfile.firstName || userProfile.lastName || username || "";
 
   return (
     <ProfileCard>
       <UserDetails>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <UserAvatar
-            userName={fullName}
-            userImage={profileImage || userProfile?.imageUrl}
-            avatarSize={100}
-          />
+        <Box sx={{ display: "flex", alignItems: "center", position: "relative" }}>
+          <AvatarContainer>
+            <UserAvatar
+              userName={fullName}
+              userImage={profileImage || userProfile?.imageUrl}
+              avatarSize={100}
+            />
+            {editMode && (
+              <label htmlFor="upload-profile-image">
+                <UploadButton
+                  accept="image/*"
+                  id="upload-profile-image"
+                  type="file"
+                  onChange={handleImageChange}
+                />
+                <Tooltip title="Upload Profile Picture">
+                  <HoverIconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                  >
+                    <CameraAltIcon />
+                  </HoverIconButton>
+                </Tooltip>
+              </label>
+            )}
+          </AvatarContainer>
           <UserInfo>
             <Typography variant="h5">{fullName}</Typography>
             <Box display="flex" alignItems="center">
-              <EmailIcon sx={{ marginRight: 1 }} />
+              <MailOutlineIcon sx={{ marginRight: 1 }} />
               <Typography color="textSecondary">{userProfile?.email}</Typography>
               {userProfile?.emailVerified && (
-                <VerifiedIcon color="primary" sx={{ marginLeft: 1 }} />
+                <VerifiedIcon sx={{ marginLeft: 1, color: 'green' }} />
               )}
             </Box>
             <Typography color="textSecondary">Role: {userRole}</Typography>
@@ -261,6 +250,8 @@ const MyProfile = () => {
                 variant="outlined"
                 color="secondary"
                 onClick={handleCancelEdit}
+                size="large"
+                startIcon={<ClearIcon />}
                 sx={{ borderRadius: "2rem", marginRight: 1 }}
               >
                 Cancel
@@ -268,7 +259,9 @@ const MyProfile = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleSaveProfile}
+                startIcon={<SaveIcon />}
+                onClick={handleSubmit(onSubmit)}
+                size="large"
                 sx={{ borderRadius: "2rem" }}
               >
                 Save
@@ -278,6 +271,7 @@ const MyProfile = () => {
             <Button
               variant="contained"
               color="primary"
+              size="large"
               startIcon={<EditIcon />}
               onClick={handleEditProfile}
               sx={{ borderRadius: "2rem" }}
@@ -287,148 +281,280 @@ const MyProfile = () => {
           )}
         </Box>
       </UserDetails>
+      {Object.keys(errors).length > 0 && (
+        <Box sx={{ marginBottom: 2 }}>
+          <Alert severity="error">
+            Please correct the following errors:
+            <ul>
+              {Object.entries(errors).map(([field, error]) => (
+                <li key={field}>{error.message}</li>
+              ))}
+            </ul>
+          </Alert>
+        </Box>
+      )}
       <EditableFields>
-        <TextField
-          label="First Name"
-          value={newFirstName}
-          onChange={(e) => setNewFirstName(e.target.value)}
-          margin="dense"
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="firstName"
+          control={control}
+          rules={{ required: "First name is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="First Name"
+              margin="dense"
+              error={!!errors.firstName}
+              helperText={errors.firstName ? errors.firstName.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Last Name"
-          value={newLastName}
-          onChange={(e) => setNewLastName(e.target.value)}
-          margin="dense"
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="lastName"
+          control={control}
+          rules={{ required: "Last name is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Last Name"
+              margin="dense"
+              error={!!errors.lastName}
+              helperText={errors.lastName ? errors.lastName.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: "Email address is required",
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+              message: "Invalid email address",
+            },
           }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Email Address"
+              margin="dense"
+              fullWidth
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
+        <Controller
+          name="phoneNumber"
+          control={control}
+          rules={{
+            required: "Phone number is required",
+            pattern: {
+              value: /^\+?[1-9]\d{1,14}$/,
+              message: "Invalid phone number",
+            },
           }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Phone Number"
+              margin="dense"
+              fullWidth
+              error={!!errors.phoneNumber}
+              helperText={errors.phoneNumber ? errors.phoneNumber.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Street"
-          value={street}
-          onChange={(e) => setStreet(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="street"
+          control={control}
+          rules={{ required: "Street is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Street"
+              margin="dense"
+              fullWidth
+              error={!!errors.street}
+              helperText={errors.street ? errors.street.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="City"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="city"
+          control={control}
+          rules={{ required: "City is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="City"
+              margin="dense"
+              fullWidth
+              error={!!errors.city}
+              helperText={errors.city ? errors.city.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="State"
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="state"
+          control={control}
+          rules={{ required: "State is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="State"
+              margin="dense"
+              fullWidth
+              error={!!errors.state}
+              helperText={errors.state ? errors.state.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Postal Code"
-          value={postalCode}
-          onChange={(e) => setPostalCode(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="postalCode"
+          control={control}
+          rules={{ required: "Postal code is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Postal Code"
+              margin="dense"
+              fullWidth
+              error={!!errors.postalCode}
+              helperText={errors.postalCode ? errors.postalCode.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="country"
+          control={control}
+          rules={{ required: "Country is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Country"
+              margin="dense"
+              fullWidth
+              error={!!errors.country}
+              helperText={errors.country ? errors.country.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Company Name"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="companyName"
+          control={control}
+          rules={{ required: "Company name is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Company Name"
+              margin="dense"
+              fullWidth
+              error={!!errors.companyName}
+              helperText={errors.companyName ? errors.companyName.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Position"
-          value={position}
-          onChange={(e) => setPosition(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="position"
+          control={control}
+          rules={{ required: "Position is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Position"
+              margin="dense"
+              fullWidth
+              error={!!errors.position}
+              helperText={errors.position ? errors.position.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
-        <TextField
-          label="Department"
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          margin="dense"
-          fullWidth
-          disabled={!editMode}
-          InputProps={{
-            readOnly: !editMode,
-            style: !editMode ? { color: 'rgba(0, 0, 0, 0.6)' } : {},
-          }}
+        <Controller
+          name="department"
+          control={control}
+          rules={{ required: "Department is required" }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Department"
+              margin="dense"
+              fullWidth
+              error={!!errors.department}
+              helperText={errors.department ? errors.department.message : ""}
+              disabled={!editMode}
+              InputProps={{
+                readOnly: !editMode,
+                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+              }}
+              onBlur={field.onBlur}
+            />
+          )}
         />
       </EditableFields>
       <Snackbar

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
-import DeleteIcon from "../../assets/delete-invoice.svg";
-import DeleteSuccessIcon from "../../assets/delete-sucess.svg";
+import DeleteIcon from "../../assets/images/delete-invoice.svg";
+import DeleteSuccessIcon from "../../assets/images/delete-sucess.svg";
 import LinearProgressWithLabel from "./LinearProgressWithLabel";
 
 const style = {

@@ -4,8 +4,8 @@ import { IconButton, Tooltip } from "@mui/material";
 import TableToolbarActions from './TableToolbarActions';
 import TableToolbarInternalActions from './TableToolbarInternalActions';
 import DetailPanel from './DetailPanel';
-import close_icon from "../../assets/close.svg";
-import MotionPlayIcon from "../../assets/motion-play-outline.svg";
+import close_icon from "../../assets/images/close.svg";
+import MotionPlayIcon from "../../assets/images/motion-play-outline.svg";
 //Material UI Imports
 import {
     Box,

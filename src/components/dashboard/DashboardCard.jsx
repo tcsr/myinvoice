@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import chartbox from "../../assets/chart-box-outline.svg";
-import filedoc from "../../assets/file-document-check-outline.svg";
-import filedocalert from "../../assets/file-document-alert-outline.svg";
-import removeoutline from "../../assets/file-document-remove-outline.svg";
-import serveroutline from "../../assets/server-outline.svg";
+import chartbox from "../../assets/images/chart-box-outline.svg";
+import filedoc from "../../assets/images/file-document-check-outline.svg";
+import filedocalert from "../../assets/images/file-document-alert-outline.svg";
+import removeoutline from "../../assets/images/file-document-remove-outline.svg";
+import serveroutline from "../../assets/images/server-outline.svg";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import useApi from "../../hooks/useApi";
 import {

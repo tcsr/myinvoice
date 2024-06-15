@@ -1,4 +1,4 @@
-import MSLog from "../assets/Mindsprint_logo.svg";
+import MSLog from "../assets/images/Mindsprint_logo.svg";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
