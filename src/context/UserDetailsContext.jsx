@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 
 export const UserDetailsContext = createContext();
 
@@ -6,19 +6,9 @@ export const UserDetailsProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [userRole, setUserRole] = useState("");
 
-  useEffect(() => {
-    const userDetailsFromStore = JSON.parse(localStorage.getItem('user'));
-    if (userDetailsFromStore) {
-      setUserProfile(userDetailsFromStore);
-      // Assuming userRole is a property of userDetailsFromStore
-      setUserRole(userDetailsFromStore.userRole || 'Invoice Admin');
-    }
-  }, []);
-
   const updateUserProfile = (profile) => {
     setUserProfile(profile);
-    setUserRole(profile.userRole || 'Invoice Admin'); // Update role
-    localStorage.setItem('user', JSON.stringify(profile));
+    setUserRole(profile.userRole || 'Invoice Admin');
   };
 
   return (
@@ -27,5 +17,8 @@ export const UserDetailsProvider = ({ children }) => {
     </UserDetailsContext.Provider>
   );
 };
+
+// Hook to use the user details context
+export const useUserDetails = () => useContext(UserDetailsContext);
 
 export default UserDetailsProvider;

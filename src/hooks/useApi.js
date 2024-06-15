@@ -1,27 +1,11 @@
 import { useState } from 'react';
-import axios from 'axios';
-import keycloak from '../config/keycloak';
-
-// Create an Axios instance
-const axiosInstance = axios.create({});
-
-// Set up an Axios interceptor to include the token from localStorage
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+import axiosInstance from './axios-instance';
+import { useKeycloak } from '../context/KeycloakProvider';
 
 const useApi = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { keycloak } = useKeycloak();
 
     const apiCall = async (method, url, data = null) => {
         setLoading(true);
@@ -31,6 +15,9 @@ const useApi = () => {
                 method,
                 url,
                 data,
+                headers: {
+                    Authorization: `Bearer ${keycloak.token}`
+                }
             });
             return response.data;
         } catch (err) {
