@@ -7,6 +7,7 @@ import UploadInvoice from "../pages/uploadInvoice/UploadInvoice";
 import MyProfile from "../pages/MyProfile";
 import ChangePassword from "../components/user/ChangePassword";
 import ProtectedRoute from "../components/prtotected/ProtectedRoute";
+import InvoiceDetails from "../pages/InvoiceDetails";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
       <Route path="/view-invoice" element={<ProtectedRoute><ViewInvoice /></ProtectedRoute>} />
       <Route path="/search-invoice" element={<ProtectedRoute><SearchInvoice /></ProtectedRoute>} />
       <Route path="/upload-invoice" element={<ProtectedRoute><UploadInvoice /></ProtectedRoute>} />
+      <Route path="/invoice-details/:id" element={<ProtectedRoute><InvoiceDetails /></ProtectedRoute>} />
       <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
       <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/home" replace />} />

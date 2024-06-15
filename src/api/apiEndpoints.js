@@ -1,7 +1,5 @@
 
-
-// const API_BASE_URL = 'https://dev-einvoice.olamnet.com/api';
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const API_ENDPOINTS = {
     GET_SUPPLIER_DETAILS: `${API_BASE_URL}/einvoice/getSupplierDetails`,

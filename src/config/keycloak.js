@@ -1,11 +1,12 @@
 import Keycloak from 'keycloak-js';
 
+// Retrieve the Keycloak configuration from environment variables
 const keycloakConfig = {
-    url: 'http://localhost:9000/',
-    realm: 'eInvoice-dev',
-    clientId: 'portal-local',
+    url: import.meta.env.VITE_KEYCLOAK_URL,
+    realm: import.meta.env.VITE_KEYCLOAK_REALM,
+    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 };
 
-const keycloak = new Keycloak(keycloakConfig)
+const keycloak = new Keycloak(keycloakConfig);
 
 export default keycloak;
