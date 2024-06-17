@@ -309,7 +309,7 @@ padding: 25px;
 
 .p-field {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .custom-input {

@@ -54,7 +54,7 @@ const getStatusChip = (status) => {
           }}
         />
       );
-    case "InQueue":
+    case "In Queue":
       return (
         <Chip
           icon={

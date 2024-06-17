@@ -19,6 +19,7 @@ import ProductDetailsSection from "../../components/new-invoice/ProductDetailsSe
 import PaymentInfoSection from "../../components/new-invoice/PaymentInfoSection";
 import SummarySection from "../../components/new-invoice/SummarySection";
 import FooterSection from "../../components/new-invoice/FooterSection";
+import { Alert, Snackbar } from "@mui/material";
 
 function UploadInvoice() {
   const { get, post, del, loading, error } = useApi();
@@ -88,7 +89,18 @@ function UploadInvoice() {
   const [openModal, setOpenModal] = useState(false);
   const [openGenrateInvoiceModal, setOpenGenrateInvoiceModal] = useState(false);
   const [errors, setErrors] = useState({});
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
+  const [
+    msicCodeAndBusinessActivityOptions,
+    setMsicCodeAndBusinessActivityOptions,
+  ] = useState([]);
+  const [msicCodeOptions, setMsicCodeOptions] = useState([]);
+  const [businessActivityOptions, setBusinessActivityOptions] = useState([]);
   const totalInvoices = 15;
   const [rows, setRows] = useState([
     {
@@ -118,13 +130,92 @@ function UploadInvoice() {
     fetchInvoiceType();
     fetchCurrencyCode();
     fetchTaxType();
-    calculateSummary();
     fetchPaymentMode();
+    calculateSummary();
+    fetchMsicCode();
   }, [rows]);
 
+  const fetchMsicCode = async () => {
+    try {
+      const response = await get(API_ENDPOINTS.GET_MSIC_CODE);
+
+      if (!response) {
+        throw new Error("Failed to fetch");
+      }
+      const msicBusinessActivityMapping = response;
+      // const msicBusinessActivityMapping = [
+      //   {
+      //     id: 1,
+      //     code: "00000",
+      //     description: "NOT APPLICABLE",
+      //     category: "",
+      //   },
+      //   {
+      //     id: 2,
+      //     code: "01111",
+      //     description: "Growing of maize",
+      //     category: "A",
+      //   },
+      //   {
+      //     id: 3,
+      //     code: "01112",
+      //     description: "Growing of leguminous crops",
+      //     category: "A",
+      //   },
+      //   {
+      //     id: 4,
+      //     code: "01113",
+      //     description: "Growing of oil seeds",
+      //     category: "A",
+      //   },
+      // ];
+      setMsicCodeAndBusinessActivityOptions(msicBusinessActivityMapping);
+      const msicCodeOptions = msicBusinessActivityMapping.map((item) => ({
+        id: item.id,
+        label: item.code,
+        value: item.code,
+        category: item.category,
+      }));
+
+      const businessActivityOptions = msicBusinessActivityMapping.map(
+        (item) => ({
+          id: item.id,
+          label: item.description,
+          value: item.description,
+          category: item.category,
+        })
+      );
+
+      setMsicCodeOptions(msicCodeOptions);
+      setBusinessActivityOptions(businessActivityOptions);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleMsicCodeAndBusinessActivityDropdownChange = (e) => {
+    const selectedCode = e.value;
+    setMsicCode(selectedCode);
+    const selectedDescription =
+      msicCodeAndBusinessActivityOptions.find(
+        (item) => item.code === selectedCode
+      )?.description || null;
+    setBusinessActivityDesc(selectedDescription);
+  };
+
+  const handlesetBusinessActivityDescDropdownChange = (e) => {
+    const selectedDescription = e.value;
+    setBusinessActivityDesc(selectedDescription);
+    const selectedCode =
+      msicCodeAndBusinessActivityOptions.find(
+        (item) => item.description === selectedDescription
+      )?.code || null;
+    setMsicCode(selectedCode);
+  };
   const fetchPaymentMode = async () => {
     try {
       const response = await get(API_ENDPOINTS.GET_PAYMENT_MODE);
+
       if (!response) {
         throw new Error("Failed to fetch");
       }
@@ -142,15 +233,15 @@ function UploadInvoice() {
 
   const fetchTaxType = async () => {
     try {
-      const response = await get(API_ENDPOINTS.GET_CURRENCY_CODE);
+      const response = await get(API_ENDPOINTS.GET_TAX_TYPE);
       if (!response) {
         throw new Error("Failed to fetch");
       }
       const data = response;
 
       const tax = data.map((tax) => ({
-        label: tax["Description"],
-        value: tax["Code"],
+        label: tax["description"],
+        value: tax["code"],
       }));
 
       setTaxTypeOptions(tax);
@@ -201,6 +292,7 @@ function UploadInvoice() {
   const fetchStateData = async () => {
     try {
       const response = await get(API_ENDPOINTS.GET_STATE_CODE);
+
       if (!response) {
         throw new Error("Failed to fetch");
       }
@@ -231,10 +323,6 @@ function UploadInvoice() {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
@@ -297,9 +385,11 @@ function UploadInvoice() {
   };
 
   const [isSupplierInfoExpanded, setSupplierInfoExpanded] = useState(true);
-  const [isBuyerInfoExpanded, setBuyerInfoExpanded] = useState(false);
-  const [isInvoiceDetailsInfoExpanded, setInvoiceDetailsExpanded] = useState(false);
-  const [isProductDetailsInfoExpanded, setProductDetailsExpanded] = useState(false);
+  const [isBuyerInfoExpanded, setBuyerInfoExpanded] = useState(true);
+  const [isInvoiceDetailsInfoExpanded, setInvoiceDetailsExpanded] =
+    useState(true);
+  const [isProductDetailsInfoExpanded, setProductDetailsExpanded] =
+    useState(true);
 
   const toggleSupplierInfo = () => {
     setSupplierInfoExpanded(!isSupplierInfoExpanded);
@@ -358,7 +448,9 @@ function UploadInvoice() {
         },
       ]);
     } else {
-      alert("Please fill out all fields in the previous row before adding a new row.");
+      alert(
+        "Please fill out all fields in the previous row before adding a new row."
+      );
     }
   };
 
@@ -394,7 +486,11 @@ function UploadInvoice() {
   };
 
   const columns = [
-    { field: "classification", header: "Classification", style: { width: "100px" } },
+    {
+      field: "classification",
+      header: "Classification",
+      style: { width: "100px" },
+    },
     { field: "description", header: "Description", style: { width: "150px" } },
     { field: "unitPrice", header: "Unit Price", style: { width: "150px" } },
     { field: "quantity", header: "Qty", style: { width: "150px" } },
@@ -497,42 +593,51 @@ function UploadInvoice() {
     setValidationDateTime(e.value);
   };
 
-  const msicBusinessActivityMapping = [
-    { Code: "00000", Description: "NOT APPLICABLE" },
-    { Code: "01111", Description: "Growing of maize" },
-    { Code: "01112", Description: "Growing of leguminous crops" },
-    { Code: "01113", Description: "Growing of oil seeds" },
-  ];
+  // const msicBusinessActivityMapping = [
+  //   {
+  //     id: 1,
+  //     code: "00000",
+  //     description: "NOT APPLICABLE",
+  //     category: "",
+  //   },
+  //   {
+  //     id: 2,
+  //     code: "01111",
+  //     description: "Growing of maize",
+  //     category: "A",
+  //   },
+  //   {
+  //     id: 3,
+  //     code: "01112",
+  //     description: "Growing of leguminous crops",
+  //     category: "A",
+  //   },
+  //   {
+  //     id: 4,
+  //     code: "01113",
+  //     description: "Growing of oil seeds",
+  //     category: "A",
+  //   },
+  // ];
 
-  const msicCodeOptions = msicBusinessActivityMapping.map((item) => ({
-    label: item.Code,
-    value: item.Code,
-  }));
+  // const handleSupplierSignFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) {
+  //     setSupplierSignatureError("Please upload a file.");
+  //     return;
+  //   }
 
-  const businessActivityOptions = msicBusinessActivityMapping.map((item) => ({
-    label: item.Description,
-    value: item.Description,
-  }));
+  //   if (file.size > 100 * 1024) {
+  //     setSupplierSignatureError(
+  //       "Image size exceeds 100kb. Please upload an image with a maximum size of 100kb."
+  //     );
+  //     event.target.value = null;
+  //     return;
+  //   }
 
-  const handleMsicCodeAndBusinessActivityDropdownChange = (e) => {
-    const selectedCode = e.value;
-    setMsicCode(selectedCode);
-    const selectedDescription =
-      msicBusinessActivityMapping.find((item) => item.Code === selectedCode)
-        ?.Description || null;
-    setBusinessActivityDesc(selectedDescription);
-  };
-
-  const handlesetBusinessActivityDescDropdownChange = (e) => {
-    const selectedDescription = e.value;
-    setBusinessActivityDesc(selectedDescription);
-    const selectedCode =
-      msicBusinessActivityMapping.find(
-        (item) => item.Description === selectedDescription
-      )?.Code || null;
-    setMsicCode(selectedCode);
-  };
-
+  //   setSupplierDigiSign(file.name);
+  //   setSupplierSignatureError("");
+  // };
   const handleSupplierSignFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -548,6 +653,17 @@ function UploadInvoice() {
       return;
     }
 
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result
+        .replace("data:", "")
+        .replace(/^.+,/, "");
+      // Now you can send the base64String to your API
+      console.log("Base64 String:", base64String);
+      // Example: setBase64Signature(base64String);
+    };
+    reader.readAsDataURL(file);
+
     setSupplierDigiSign(file.name);
     setSupplierSignatureError("");
   };
@@ -558,7 +674,7 @@ function UploadInvoice() {
 
   const handleStateDropdownChange = (e) => {
     console.log(e);
-    // setSupplierState(e.value);
+    setSupplierState(e.value);
   };
 
   const handleBuyerStateDropdownChange = (e) => {
@@ -579,6 +695,13 @@ function UploadInvoice() {
 
   const handlePaymentModeDropdownChange = (e) => {
     setSelectedPaymentMode(e.value);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleClearAll = () => {
@@ -637,6 +760,7 @@ function UploadInvoice() {
         totalAmount: "",
       },
     ]);
+    scrollToTop();
   };
 
   const validateFields = () => {
@@ -649,80 +773,144 @@ function UploadInvoice() {
       cityName: cityName ? "" : "City Name is required",
       supplierState: supplierState ? "" : "Supplier State is required",
       supplierCountry: supplierCountry ? "" : "Supplier Country is required",
-      passportIdNumber: passportIdNumber ? "" : "Passport ID Number is required",
+      passportIdNumber: passportIdNumber
+        ? ""
+        : "Passport ID Number is required",
       sstRegNumber: sstRegNumber ? "" : "SST Registration Number is required",
-      tourismRegNumber: tourismRegNumber ? "" : "Tourism Registration Number is required",
+      tourismRegNumber: tourismRegNumber
+        ? ""
+        : "Tourism Registration Number is required",
       msicCode: msicCode ? "" : "MSIC Code is required",
-      businessActivityDesc: businessActivityDesc ? "" : "Business Activity Description is required",
+      businessActivityDesc: businessActivityDesc
+        ? ""
+        : "Business Activity Description is required",
       buyerName: buyerName ? "" : "Buyer Name is required",
-      buyerTaxIDNumber: buyerTaxIDNumber ? "" : "Buyer Tax ID Number is required",
-      buyerPassportIdNumber: buyerPassportIdNumber ? "" : "Buyer Passport ID Number is required",
-      buyerSstRegNumber: buyerSstRegNumber ? "" : "Buyer SST Registration Number is required",
-      buyerEmailAddress: buyerEmailAddress ? "" : "Buyer Email Address is required",
+      buyerTaxIDNumber: buyerTaxIDNumber
+        ? ""
+        : "Buyer Tax ID Number is required",
+      buyerPassportIdNumber: buyerPassportIdNumber
+        ? ""
+        : "Buyer Passport ID Number is required",
+      buyerSstRegNumber: buyerSstRegNumber
+        ? ""
+        : "Buyer SST Registration Number is required",
+      buyerEmailAddress: buyerEmailAddress
+        ? ""
+        : "Buyer Email Address is required",
       buyerAddress: buyerAddress ? "" : "Buyer Address is required",
       buyerCityName: buyerCityName ? "" : "Buyer City Name is required",
       buyerStateName: buyerStateName ? "" : "Buyer State Name is required",
       buyerCountry: buyerCountry ? "" : "Buyer Country is required",
-      buyerContactNumber: buyerContactNumber ? "" : "Buyer Contact Number is required",
+      buyerContactNumber: buyerContactNumber
+        ? ""
+        : "Buyer Contact Number is required",
       invoiceVersion: invoiceVersion ? "" : "Invoice Version is required",
-      selectedInvoiceType: selectedInvoiceType ? "" : "Invoice Type is required",
-      invoiceCodeNumber: invoiceCodeNumber ? "" : "Invoice Code/Number is required",
+      selectedInvoiceType: selectedInvoiceType
+        ? ""
+        : "Invoice Type is required",
+      invoiceCodeNumber: invoiceCodeNumber
+        ? ""
+        : "Invoice Code/Number is required",
       invoiceDateTime: invoiceDateTime ? "" : "Invoice Date & Time is required",
-      validationDateTime: validationDateTime ? "" : "Validation Date & Time is required",
-      supplierDigiSign: supplierDigiSign ? "" : "Supplier’s Digital Signature is required",
-      invoiceCurrencyCode: invoiceCurrencyCode ? "" : "Invoice Currency Code is required",
-      currencyExchangeRate: currencyExchangeRate ? "" : "Currency Exchange Rate is required",
+      validationDateTime: validationDateTime
+        ? ""
+        : "Validation Date & Time is required",
+      supplierDigiSign: supplierDigiSign
+        ? ""
+        : "Supplier’s Digital Signature is required",
+      invoiceCurrencyCode: invoiceCurrencyCode
+        ? ""
+        : "Invoice Currency Code is required",
+      currencyExchangeRate: currencyExchangeRate
+        ? ""
+        : "Currency Exchange Rate is required",
       billFrequency: billFrequency ? "" : "Frequency of Billing is required",
       billPeriod: billPeriod ? "" : "Billing Period is required",
-      irbmUniqueId: irbmUniqueId ? "" : "IRBM Unique Identifier Number is required",
+      irbmUniqueId: irbmUniqueId
+        ? ""
+        : "IRBM Unique Identifier Number is required",
     };
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const validationErrors = validateFields();
     setErrors(validationErrors);
 
     const hasErrors = Object.values(validationErrors).some((error) => error);
     if (!hasErrors) {
       const payload = {
-        supplierName,
-        emailAddress,
-        contactNumber,
-        address,
-        taxIDNumber,
-        cityName,
-        supplierState,
-        supplierCountry,
-        passportIdNumber,
-        sstRegNumber,
-        tourismRegNumber,
-        msicCode,
-        businessActivityDesc,
-        buyerName,
-        buyerTaxIDNumber,
-        buyerPassportIdNumber,
-        buyerSstRegNumber,
-        buyerEmailAddress,
-        buyerAddress,
-        buyerCityName,
-        buyerStateName,
-        buyerCountry,
-        buyerContactNumber,
-        invoiceVersion,
-        selectedInvoiceType,
-        invoiceCodeNumber,
-        invoiceRefNumber,
-        invoiceDateTime,
-        validationDateTime,
-        supplierDigiSign,
-        invoiceCurrencyCode,
-        currencyExchangeRate,
-        billFrequency,
-        billPeriod,
-        irbmUniqueId,
+        supplier: {
+          name: supplierName,
+          emailAddress: emailAddress,
+          contactNumber: contactNumber,
+          address: address,
+          taxIDNumber: taxIDNumber,
+          passportIdNumber: passportIdNumber,
+          sstRegNumber: sstRegNumber,
+          tourismRegNumber: tourismRegNumber,
+          msicCode: msicCode,
+          businessActivityDesc: businessActivityDesc,
+          cityName: cityName,
+          state: supplierState,
+          country: supplierCountry,
+        },
+        buyer: {
+          name: buyerName,
+          emailAddress: buyerEmailAddress,
+          contactNumber: buyerContactNumber,
+          address: buyerAddress,
+          taxIDNumber: buyerTaxIDNumber,
+          passportIdNumber: buyerPassportIdNumber,
+          sstRegNumber: buyerSstRegNumber,
+          cityName: buyerCityName,
+          state: buyerStateName,
+          country: buyerCountry,
+        },
+        invoice: {
+          version: invoiceVersion,
+          type: selectedInvoiceType,
+          codeNumber: invoiceCodeNumber,
+          refNumber: invoiceRefNumber,
+          dateTime: invoiceDateTime,
+          validationDateTime: validationDateTime,
+          supplierDigiSign: supplierDigiSign,
+          currencyCode: invoiceCurrencyCode,
+          exchangeRate: currencyExchangeRate,
+          billFrequency: billFrequency,
+          billPeriod: billPeriod,
+          irbmUniqueId: irbmUniqueId,
+        },
+        payment: {
+          mode: selectedPaymentMode,
+          terms: selectedPaymentTerms,
+          amount: paymentAmount,
+          bankAccNumber: bankAccNumber,
+          date: paymentDate,
+          refNumber: paymentRefNumber,
+          billRefNumber: billRefNumber,
+        },
+        productDetailsItems: rows,
+        summary: summary,
       };
-      console.log("Payload: ", payload);
-      // Save data or make API call here
+      try {
+        const response = await post(API_ENDPOINTS.CREATE_INVOICE, payload);
+        console.log("API Response:", response);
+        if (response?.status == "Success") {
+          setSnackbar({
+            open: true,
+            message: response.message,
+            severity: "success",
+          });
+          handleClearAll();
+        }
+      } catch (apiError) {
+        setSnackbar({
+          open: true,
+          message: apiError.message,
+          severity: "error",
+        });
+        console.error("API Error:", apiError);
+      }
     }
   };
 
@@ -731,168 +919,205 @@ function UploadInvoice() {
   };
 
   return (
-    <div className="parent-container">
+    <>
       <div className="new-invoice-container">
         <p className="new-invoice-title">New Invoice</p>
       </div>
-      <div className="flex-container">
-        <FileUploadSection handleFileUpload={handleFileUpload} />
-        <div style={{ flex: 7.4 }}>
-          <p style={{ color: "#05353D", fontSize: 20, fontWeight: 400 }}>Invoice Details</p>
-          <SupplierInfoSection
-            isExpanded={isSupplierInfoExpanded}
-            toggleExpand={toggleSupplierInfo}
-            supplierName={supplierName}
-            setSupplierName={setSupplierName}
-            emailAddress={emailAddress}
-            setEmailAddress={setEmailAddress}
-            contactNumber={contactNumber}
-            setContactNumber={setContactNumber}
-            address={address}
-            setAddress={setAddress}
-            taxIDNumber={taxIDNumber}
-            setTaxIDNumber={setTaxIDNumber}
-            cityName={cityName}
-            setCityName={setCityName}
-            supplierState={supplierState}
-            setSupplierState={setSupplierState}
-            supplierCountry={supplierCountry}
-            setSupplierCountry={setSupplierCountry}
-            passportIdNumber={passportIdNumber}
-            setPassportIdNumber={setPassportIdNumber}
-            sstRegNumber={sstRegNumber}
-            setSstRegNumber={setSstRegNumber}
-            tourismRegNumber={tourismRegNumber}
-            setTourismRegNumber={setTourismRegNumber}
-            msicCode={msicCode}
-            setMsicCode={setMsicCode}
-            businessActivityDesc={businessActivityDesc}
-            setBusinessActivityDesc={setBusinessActivityDesc}
-            supplierDigiSign={supplierDigiSign}
-            setSupplierDigiSign={setSupplierDigiSign}
-            stateOptions={stateOptions}
-            countryOptions={countryOptions}
-            handleStateDropdownChange={handleStateDropdownChange}
-            handleCountryDropdownChange={handleCountryDropdownChange}
-            handleMsicCodeAndBusinessActivityDropdownChange={handleMsicCodeAndBusinessActivityDropdownChange}
-            handlesetBusinessActivityDescDropdownChange={handlesetBusinessActivityDescDropdownChange}
-            supplierSignatureError={supplierSignatureError}
-            setSupplierSignatureError={setSupplierSignatureError}
-            handleSupplierSignFileChange={handleSupplierSignFileChange}
-            errors={errors}
-          />
-          <BuyerInfoSection
-            isExpanded={isBuyerInfoExpanded}
-            toggleExpand={toggleBuyerInfo}
-            buyerName={buyerName}
-            setBuyerName={setBuyerName}
-            buyerEmailAddress={buyerEmailAddress}
-            setBuyerEmailAddress={setBuyerEmailAddress}
-            buyerContactNumber={buyerContactNumber}
-            setBuyerContactNumber={setBuyerContactNumber}
-            buyerAddress={buyerAddress}
-            setBuyerAddress={setBuyerAddress}
-            buyerCityName={buyerCityName}
-            setBuyerCityName={setBuyerCityName}
-            buyerStateName={buyerStateName}
-            setBuyerStateName={setBuyerStateName}
-            buyerCountry={buyerCountry}
-            setBuyerCountry={setBuyerCountry}
-            buyerTaxIDNumber={buyerTaxIDNumber}
-            setBuyerTaxIDNumber={setBuyerTaxIDNumber}
-            buyerPassportIdNumber={buyerPassportIdNumber}
-            setBuyerPassportIdNumber={setBuyerPassportIdNumber}
-            buyerSstRegNumber={buyerSstRegNumber}
-            setBuyerSstRegNumber={setBuyerSstRegNumber}
-            stateOptions={stateOptions}
-            countryOptions={countryOptions}
-            handleBuyerStateDropdownChange={handleBuyerStateDropdownChange}
-            handleBuyerCountryDropdownChange={handleBuyerCountryDropdownChange}
-            errors={errors}
-          />
-          <InvoiceDetailsSection
-            isExpanded={isInvoiceDetailsInfoExpanded}
-            toggleExpand={toggleInvoiceDetailsInfo}
-            invoiceVersion={invoiceVersion}
-            setInvoiceVersion={setInvoiceVersion}
-            selectedInvoiceType={selectedInvoiceType}
-            setSelectedInvoiceType={setSelectedInvoiceType}
-            invoiceCodeNumber={invoiceCodeNumber}
-            setInvoiceCodeNumber={setInvoiceCodeNumber}
-            invoiceRefNumber={invoiceRefNumber}
-            setInvoiceRefNumber={setInvoiceRefNumber}
-            invoiceDateTime={invoiceDateTime}
-            setInvoiceDateTime={setInvoiceDateTime}
-            validationDateTime={validationDateTime}
-            setValidationDateTime={setValidationDateTime}
-            supplierDigiSign={supplierDigiSign}
-            setSupplierDigiSign={setSupplierDigiSign}
-            supplierSignatureError={supplierSignatureError}
-            setSupplierSignatureError={setSupplierSignatureError}
-            invoiceCurrencyCode={invoiceCurrencyCode}
-            setInvoiceCurrencyCode={setInvoiceCurrencyCode}
-            currencyExchangeRate={currencyExchangeRate}
-            setCurrencyExchangeRate={setCurrencyExchangeRate}
-            billFrequency={billFrequency}
-            setBillFrequency={setBillFrequency}
-            billPeriod={billPeriod}
-            setBillPeriod={setBillPeriod}
-            irbmUniqueId={irbmUniqueId}
-            setIrmbUniqueId={setIrmbUniqueId}
-            handleTypeDropdownChange={handleTypeDropdownChange}
-            handleDropdownChange={handleDropdownChange}
-            handleSupplierSignFileChange={handleSupplierSignFileChange}
-            handleDateChange={handleDateChange}
-            handleValidationDateChange={handleValidationDateChange}
-            invoiceType={invoiceType}
-            currencyCode={currencyCode}
-            errors={errors}
-          />
-          <ProductDetailsSection
-            isExpanded={isProductDetailsInfoExpanded}
-            toggleExpand={toggleProductDetailsInfo}
-            rows={rows}
-            columns={columns}
-            data={data}
-            addRow={addRow}
-            removeLastRow={removeLastRow}
-            handleInputChange={handleInputChange}
-            handleDropdownSelectClassificationChange={handleDropdownSelectClassificationChange}
-            handleDropdownSelectTaxTypeChange={handleDropdownSelectTaxTypeChange}
-            taxTypeOptions={taxTypeOptions}
-            classificationOptions={classificationOptions}
-          />
-          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-            <PaymentInfoSection
-              selectedPaymentMode={selectedPaymentMode}
-              setSelectedPaymentMode={setSelectedPaymentMode}
-              selectedPaymentTerms={selectedPaymentTerms}
-              setSelectedPaymentTerms={setSelectedPaymentTerms}
-              paymentAmount={paymentAmount}
-              setPaymentAmount={setPaymentAmount}
-              bankAccNumber={bankAccNumber}
-              setBankAccNumber={setBankAccNumber}
-              paymentDate={paymentDate}
-              setPaymentDate={setPaymentDate}
-              paymentRefNumber={paymentRefNumber}
-              setPaymentRefNumber={setPaymentRefNumber}
-              billRefNumber={billRefNumber}
-              setBillRefNumber={setBillRefNumber}
-              paymentMode={paymentMode}
-              handlePaymentModeDropdownChange={handlePaymentModeDropdownChange}
+      <div className="parent-container">
+        <div className="flex-container">
+          <FileUploadSection handleFileUpload={handleFileUpload} />
+          <div style={{ flex: 7.4 }}>
+            <p style={{ color: "#05353D", fontSize: 20, fontWeight: 400 }}>
+              Invoice Details
+            </p>
+            <SupplierInfoSection
+              isExpanded={isSupplierInfoExpanded}
+              toggleExpand={toggleSupplierInfo}
+              supplierName={supplierName}
+              setSupplierName={setSupplierName}
+              emailAddress={emailAddress}
+              setEmailAddress={setEmailAddress}
+              contactNumber={contactNumber}
+              setContactNumber={setContactNumber}
+              address={address}
+              setAddress={setAddress}
+              taxIDNumber={taxIDNumber}
+              setTaxIDNumber={setTaxIDNumber}
+              cityName={cityName}
+              setCityName={setCityName}
+              supplierState={supplierState}
+              setSupplierState={setSupplierState}
+              supplierCountry={supplierCountry}
+              setSupplierCountry={setSupplierCountry}
+              passportIdNumber={passportIdNumber}
+              setPassportIdNumber={setPassportIdNumber}
+              sstRegNumber={sstRegNumber}
+              setSstRegNumber={setSstRegNumber}
+              tourismRegNumber={tourismRegNumber}
+              setTourismRegNumber={setTourismRegNumber}
+              msicCode={msicCode}
+              setMsicCode={setMsicCode}
+              msicCodeOptions={msicCodeOptions}
+              businessActivityDesc={businessActivityDesc}
+              businessActivityOptions={businessActivityOptions}
+              setBusinessActivityDesc={setBusinessActivityDesc}
+              supplierDigiSign={supplierDigiSign}
+              setSupplierDigiSign={setSupplierDigiSign}
+              stateOptions={stateOptions}
+              countryOptions={countryOptions}
+              handleStateDropdownChange={handleStateDropdownChange}
+              handleCountryDropdownChange={handleCountryDropdownChange}
+              handleMsicCodeAndBusinessActivityDropdownChange={
+                handleMsicCodeAndBusinessActivityDropdownChange
+              }
+              handlesetBusinessActivityDescDropdownChange={
+                handlesetBusinessActivityDescDropdownChange
+              }
+              supplierSignatureError={supplierSignatureError}
+              setSupplierSignatureError={setSupplierSignatureError}
+              handleSupplierSignFileChange={handleSupplierSignFileChange}
+              errors={errors}
             />
-            <SummarySection summary={summary} />
+            <BuyerInfoSection
+              isExpanded={isBuyerInfoExpanded}
+              toggleExpand={toggleBuyerInfo}
+              buyerName={buyerName}
+              setBuyerName={setBuyerName}
+              buyerEmailAddress={buyerEmailAddress}
+              setBuyerEmailAddress={setBuyerEmailAddress}
+              buyerContactNumber={buyerContactNumber}
+              setBuyerContactNumber={setBuyerContactNumber}
+              buyerAddress={buyerAddress}
+              setBuyerAddress={setBuyerAddress}
+              buyerCityName={buyerCityName}
+              setBuyerCityName={setBuyerCityName}
+              buyerStateName={buyerStateName}
+              setBuyerStateName={setBuyerStateName}
+              buyerCountry={buyerCountry}
+              setBuyerCountry={setBuyerCountry}
+              buyerTaxIDNumber={buyerTaxIDNumber}
+              setBuyerTaxIDNumber={setBuyerTaxIDNumber}
+              buyerPassportIdNumber={buyerPassportIdNumber}
+              setBuyerPassportIdNumber={setBuyerPassportIdNumber}
+              buyerSstRegNumber={buyerSstRegNumber}
+              setBuyerSstRegNumber={setBuyerSstRegNumber}
+              stateOptions={stateOptions}
+              countryOptions={countryOptions}
+              handleBuyerStateDropdownChange={handleBuyerStateDropdownChange}
+              handleBuyerCountryDropdownChange={
+                handleBuyerCountryDropdownChange
+              }
+              errors={errors}
+            />
+            <InvoiceDetailsSection
+              isExpanded={isInvoiceDetailsInfoExpanded}
+              toggleExpand={toggleInvoiceDetailsInfo}
+              invoiceVersion={invoiceVersion}
+              setInvoiceVersion={setInvoiceVersion}
+              selectedInvoiceType={selectedInvoiceType}
+              setSelectedInvoiceType={setSelectedInvoiceType}
+              invoiceCodeNumber={invoiceCodeNumber}
+              setInvoiceCodeNumber={setInvoiceCodeNumber}
+              invoiceRefNumber={invoiceRefNumber}
+              setInvoiceRefNumber={setInvoiceRefNumber}
+              invoiceDateTime={invoiceDateTime}
+              setInvoiceDateTime={setInvoiceDateTime}
+              validationDateTime={validationDateTime}
+              setValidationDateTime={setValidationDateTime}
+              supplierDigiSign={supplierDigiSign}
+              setSupplierDigiSign={setSupplierDigiSign}
+              supplierSignatureError={supplierSignatureError}
+              setSupplierSignatureError={setSupplierSignatureError}
+              invoiceCurrencyCode={invoiceCurrencyCode}
+              setInvoiceCurrencyCode={setInvoiceCurrencyCode}
+              currencyExchangeRate={currencyExchangeRate}
+              setCurrencyExchangeRate={setCurrencyExchangeRate}
+              billFrequency={billFrequency}
+              setBillFrequency={setBillFrequency}
+              billPeriod={billPeriod}
+              setBillPeriod={setBillPeriod}
+              irbmUniqueId={irbmUniqueId}
+              setIrmbUniqueId={setIrmbUniqueId}
+              handleTypeDropdownChange={handleTypeDropdownChange}
+              handleDropdownChange={handleDropdownChange}
+              handleSupplierSignFileChange={handleSupplierSignFileChange}
+              handleDateChange={handleDateChange}
+              handleValidationDateChange={handleValidationDateChange}
+              invoiceType={invoiceType}
+              currencyCode={currencyCode}
+              errors={errors}
+            />
+            <ProductDetailsSection
+              isExpanded={isProductDetailsInfoExpanded}
+              toggleExpand={toggleProductDetailsInfo}
+              rows={rows}
+              columns={columns}
+              data={data}
+              addRow={addRow}
+              removeLastRow={removeLastRow}
+              handleInputChange={handleInputChange}
+              handleDropdownSelectClassificationChange={
+                handleDropdownSelectClassificationChange
+              }
+              handleDropdownSelectTaxTypeChange={
+                handleDropdownSelectTaxTypeChange
+              }
+              taxTypeOptions={taxTypeOptions}
+              classificationOptions={classificationOptions}
+            />
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+              <PaymentInfoSection
+                selectedPaymentMode={selectedPaymentMode}
+                setSelectedPaymentMode={setSelectedPaymentMode}
+                selectedPaymentTerms={selectedPaymentTerms}
+                setSelectedPaymentTerms={setSelectedPaymentTerms}
+                paymentAmount={paymentAmount}
+                setPaymentAmount={setPaymentAmount}
+                bankAccNumber={bankAccNumber}
+                setBankAccNumber={setBankAccNumber}
+                paymentDate={paymentDate}
+                setPaymentDate={setPaymentDate}
+                paymentRefNumber={paymentRefNumber}
+                setPaymentRefNumber={setPaymentRefNumber}
+                billRefNumber={billRefNumber}
+                setBillRefNumber={setBillRefNumber}
+                paymentMode={paymentMode}
+                handlePaymentModeDropdownChange={
+                  handlePaymentModeDropdownChange
+                }
+              />
+              <SummarySection summary={summary} />
+            </div>
           </div>
         </div>
+        <FooterSection
+          handleClearAll={handleClearAll}
+          handleDelete={handleDelete}
+          handleSave={handleSave}
+        />
+        <CustomModal open={openModal} handleClose={handleCloseModal} />
+        <CustomGenerateInvoiceModal
+          open={openGenrateInvoiceModal}
+          handleClose={handleGenerateCloseModal}
+          totalInvoices={totalInvoices}
+        />
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={9000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            severity={snackbar.severity}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
-      <FooterSection handleClearAll={handleClearAll} handleDelete={handleDelete} handleSave={handleSave} />
-      <CustomModal open={openModal} handleClose={handleCloseModal} />
-      <CustomGenerateInvoiceModal
-        open={openGenrateInvoiceModal}
-        handleClose={handleGenerateCloseModal}
-        totalInvoices={totalInvoices}
-      />
-    </div>
+    </>
   );
 }
 

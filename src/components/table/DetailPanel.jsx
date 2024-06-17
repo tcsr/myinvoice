@@ -1,7 +1,7 @@
-import React from 'react';
 import { Box, Typography } from "@mui/material";
 import getStatusChip from "../../utils/getStatusChip";
 import QRCode from "react-qr-code";
+import { formatDateIntoReadableFormat } from "../../utils/index";
 
 const DetailPanel = ({ row }) => {
     return (
@@ -28,7 +28,7 @@ const DetailPanel = ({ row }) => {
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold', width: '120px' }}>Ack Date:</Typography>
-                    <Typography variant="body2">{row.original.docDate}</Typography>
+                    <Typography variant="body2">{formatDateIntoReadableFormat(row.original.docDate)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold', width: '120px' }}>Status:</Typography>

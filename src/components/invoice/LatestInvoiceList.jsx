@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import useApi from "../../hooks/useApi";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import MainTableComponent from "../table/MainTableComponent";
 import getStatusChip from "../../utils/getStatusChip";
-import { truncateText } from "../../utils/index";
-import TableProvider from "../../context/TableContext";
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { truncateText, formatDateIntoReadableFormat } from "../../utils/index";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import DetailsDialog from "../../components/table/DetailsDialog";
 
 const LatestInvoiceList = ({
@@ -16,7 +15,7 @@ const LatestInvoiceList = ({
   endDate,
   showGenerateDeleteButtons = false,
   showActionButtons = false,
-  showInvoiceMetrics
+  showInvoiceMetrics,
 }) => {
   const [data, setData] = useState([]);
   const [isError, setIsError] = useState(false);
@@ -40,7 +39,6 @@ const LatestInvoiceList = ({
     invoiceValue: true,
     irbmResponse: true,
   });
-
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
 
@@ -72,6 +70,7 @@ const LatestInvoiceList = ({
         setRowCount(response.totalElements);
         setIsError(false);
       } catch (error) {
+        console.log(error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -81,9 +80,7 @@ const LatestInvoiceList = ({
   };
 
   useEffect(() => {
-    if (selectedSupplier && startDate && endDate) {
-      fetchLatestInvoiceDetails();
-    }
+    fetchLatestInvoiceDetails();
   }, [
     selectedSupplier,
     startDate,
@@ -120,6 +117,9 @@ const LatestInvoiceList = ({
             onClick={() => handleRowClick(row.id)}
           >
             {truncateText(cell?.getValue(), 40)}
+            {/* <a style={{ cursor: "pointer", color: "#1E6091" }}>
+              {truncateText(cell?.getValue(), 40)}
+            </a> */}
           </Box>
         ),
       },
@@ -137,11 +137,30 @@ const LatestInvoiceList = ({
         accessorKey: "docDate",
         header: "Doc Date",
         size: 100,
+        Cell: ({ cell, row }) => (
+          <Box>
+            {cell?.getValue()
+              ? formatDateIntoReadableFormat(cell?.getValue())
+              : "-"}
+          </Box>
+        ),
       },
       {
         accessorKey: "generatedNumber",
         header: "Generated Number",
         size: 130,
+      },
+      {
+        accessorKey: "generatedOn",
+        header: "Generated On",
+        size: 130,
+        Cell: ({ cell, row }) => (
+          <Box>
+            {cell?.getValue()
+              ? formatDateIntoReadableFormat(cell?.getValue())
+              : "-"}
+          </Box>
+        ),
       },
       {
         accessorKey: "invoiceType",
@@ -158,12 +177,12 @@ const LatestInvoiceList = ({
         header: "IRBM Response",
         size: 90,
         Cell: ({ cell, row }) => (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title="View info">
               <IconButton
                 size="small"
                 onClick={() => handleInfoClick(row.original)}
-                sx={{ marginRight: '0.25rem', color: '#1E6091' }}
+                sx={{ marginRight: "0.05rem", color: "#1E6091" }}
               >
                 <InfoOutlinedIcon />
               </IconButton>
@@ -188,7 +207,7 @@ const LatestInvoiceList = ({
   };
 
   return (
-    <TableProvider>
+    <>
       <MainTableComponent
         columns={columns}
         data={data}
@@ -219,8 +238,7 @@ const LatestInvoiceList = ({
         onClose={() => setOpenDialog(false)}
         rowData={selectedRowData}
       />
-
-    </TableProvider>
+    </>
   );
 };
 

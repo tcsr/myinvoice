@@ -94,17 +94,18 @@ const ProductDetailsSection = ({
                         </table>
                         <div className="button-group">
                             <Button
-                                label="Add Row"
+                                label="Add Invoice Line"
                                 icon="pi pi-plus"
-                                className="p-button-text p-button-success"
+                                className="p-button-text p-button-primary" style={{ color: "#168aad" }}
                                 onClick={addRow}
                             />
-                            <Button
-                                label="Remove Row"
+                            { rows?.length > 1&& <Button
+                                label="Remove Invoice Line"
                                 icon="pi pi-minus"
                                 className="p-button-text p-button-danger"
                                 onClick={removeLastRow}
                             />
+                             }
                         </div>
                     </div>
                 </div>

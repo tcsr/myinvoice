@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import HeaderControls from '../components/header-controls/HeaderControls';
+import HeaderControls from "../components/header-controls/HeaderControls";
 import HeaderProvider, { HeaderContext } from "../context/HeaderContext";
 import LatestInvoiceList from "../components/invoice/LatestInvoiceList";
 

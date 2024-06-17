@@ -9,7 +9,9 @@ const FooterSection = ({ handleClearAll, handleDelete, handleSave }) => {
                 borderTopColor: "#E0E0E0",
                 borderTopWidth: 1,
                 borderTopStyle: "solid",
-                marginTop: 20,
+                marginTop: 10,
+                marginBottom: 20,
+                backgroundColor: "white",
             }}
         >
             <div

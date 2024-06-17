@@ -3,7 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import { UserDetailsProvider } from "./context/UserDetailsContext";
-import KeycloakProvider from './context/KeycloakProvider';
+import KeycloakProvider from "./context/KeycloakProvider";
 import AppRoutes from "./config/AppRoutes";
 
 const App = () => {

@@ -10,6 +10,7 @@ axiosInstance.interceptors.request.use(
                 await keycloak.updateToken(5);
             } catch (error) {
                 keycloak.login();
+                return Promise.reject(error);
             }
         }
 
@@ -20,6 +21,16 @@ axiosInstance.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            keycloak.login();
+        }
         return Promise.reject(error);
     }
 );

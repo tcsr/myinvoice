@@ -23,8 +23,8 @@ const PaymentInfoSection = ({
   errors = {},
 }) => {
   return (
-    <div className="payment-info-section equal-width">
-      <p className="section-title">Payment Info</p>
+    <div className="payment-info-section equal-width border-none">
+      <p className="section-title mt-0">Payment Info</p>
       <div className="payment-info-grid">
         <div className="payment-info-item">
           <label htmlFor="paymentMode">Payment Mode</label>
