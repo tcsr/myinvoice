@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Tooltip } from "@mui/material";
 import useApi from "../../hooks/useApi";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import MainTableComponent from "../table/MainTableComponent";
 import getStatusChip from "../../utils/getStatusChip";
 import { truncateText } from "../../utils/index";
 import TableProvider from "../../context/TableContext";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import DetailsDialog from "../../components/table/DetailsDialog";
 
 const LatestInvoiceList = ({
   heading,
@@ -38,6 +40,9 @@ const LatestInvoiceList = ({
     invoiceValue: true,
     irbmResponse: true,
   });
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
   const { get } = useApi();
 
@@ -94,6 +99,11 @@ const LatestInvoiceList = ({
     // Implement row click handling if needed
   };
 
+  const handleInfoClick = (row) => {
+    setSelectedRowData(row);
+    setOpenDialog(true);
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -147,7 +157,20 @@ const LatestInvoiceList = ({
         accessorKey: "irbmResponse",
         header: "IRBM Response",
         size: 90,
-        Cell: ({ cell }) => getStatusChip(cell.getValue()),
+        Cell: ({ cell, row }) => (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Tooltip title="View info">
+              <IconButton
+                size="small"
+                onClick={() => handleInfoClick(row.original)}
+                sx={{ marginRight: '0.25rem', color: '#1E6091' }}
+              >
+                <InfoOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+            {getStatusChip(cell.getValue())}
+          </Box>
+        ),
       },
     ],
     []
@@ -190,6 +213,13 @@ const LatestInvoiceList = ({
         showInvoiceMetrics={showInvoiceMetrics}
         showActionButtons={showActionButtons}
       />
+
+      <DetailsDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        rowData={selectedRowData}
+      />
+
     </TableProvider>
   );
 };
