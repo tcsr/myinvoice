@@ -1,0 +1,378 @@
+.parent-container {
+  /* margin:-10px; */
+ /* background-color: #FFFFFF; */
+}
+.new-invoice-container {
+  padding: 1px;
+  width: 100%;
+  display: flex;
+  align-items: flex-start; /* Align text at the top */
+}
+
+.new-invoice-title {
+  color: #000;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  /* background-color: #FFFFFF; */
+  width: 100%; /* Ensure the container takes full width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+}
+
+.flex-item {
+  flex: 3.8;
+}
+
+.upload-invoice-title {
+  color: #05353D;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-center-large {
+  text-align: center;
+  font-size: 16px;
+  color: #000;
+}
+
+.text-center-small {
+  text-align: center;
+  font-size: 12px;
+  color: #168AAD;
+}
+
+.instruction-title {
+  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 10px; 
+}
+
+.instruction-text {
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  white-space: normal; 
+  word-wrap: break-word; 
+}
+
+.border-dashed {
+    border: 1px dashed #616161;
+    display: flex;
+    background-color: #f9f9f9;
+    align-items: center;
+    /* height: 500px; */
+  }
+  .custom-calendar .p-datepicker-trigger {
+    color: #05353D !important;
+}
+
+.input-with-checkmark {
+  position: relative;
+  display: inline-block;
+}
+
+.input-with-checkmark .p-inputtext {
+  padding-right: 30px;
+}
+
+.input-with-checkmark .checkmark-icon {
+  position: absolute;
+  right:20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #00A865;
+  pointer-events: none;
+}
+.data-table-styles tr th, .data-table-styles tr td{
+padding: 1rem 0.2rem !important;
+}
+.data-table-styles tr th{
+  font-weight: 400;
+  font-size: 14px;
+  background: #fff;
+}
+.flex-container-invoice-details {
+  display: flex;
+  margin-top: 5px;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.flex-item-invoice-details {
+  flex: 1;
+}
+
+.label {
+  color: #212121;
+  font-size: 14px;
+}
+
+.input-field {
+  width: 290px;
+ 
+}
+.input-field-digital-sign{
+  width: 290px;
+  border: none; 
+  box-shadow: none;
+}
+
+/* .p-field {
+  display: flex;
+  align-items: center;
+} */
+.custom-input {
+  position: relative;
+  width: 290px;
+  border: 1px solid #ccc;
+  border-radius: 4px; 
+  overflow: hidden;
+}
+
+.custom-input input[type="text"] {
+  width: calc(100% - 60px); 
+  border: none;
+  padding-right: 60px; 
+  height: 100%;
+}
+
+.custom-input input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-input::after {
+  content: 'Browse';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-left: 1px solid #ccc;
+  pointer-events: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: #616161; 
+  font-size: 14px; 
+}
+
+.upload-btn {
+  margin-left: 10px;
+}
+.transparent-icon {
+  color: #616161;
+  
+}
+
+.dropzone {
+  width: 100%;
+  height: 500px;
+  margin: auto;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+}
+
+.dropzone input {
+  display: none;
+}
+
+.p-field {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-error {
+  color: red;
+  font-size: 12px;
+  margin-top: 0.5rem;
+  text-align: left !important;
+}
+
+.p-error-message {
+  text-align: left;
+}
+
+
+.p-invalid {
+  border-color: red !important;
+}
+
+/* @media (max-width: 600px) {
+  .p-field {
+    padding: 0 1rem;
+  }
+} */
+.accordion-container{
+border-bottom-color: #E0E0E0;
+border-bottom-width: 1;
+border-bottom-style: solid;
+justify-content: space-between;
+display: flex;
+align-items: center;
+cursor: pointer;
+}
+.accordion-title-text{
+  color: #168AAD;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.expanded-container{
+display: flex;
+margin-top: 5;
+justify-content: space-between;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.section-title {
+  color: #0057b8;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.summary-section {
+  margin-left: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.summary-label {
+  color: #666;
+  font-weight: bold;
+}
+
+.summary-value {
+  color: #000;
+}
+
+.p-field {
+  margin-bottom: 20px;
+}
+
+.p-error {
+  font-size: 12px;
+  color: red;
+}
+
+.p-invalid {
+  border-color: red;
+}
+
+.payment-info-section, .summary-section {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.payment-info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.payment-info-item {
+  flex: 1 1 calc(50% - 20px);
+  margin-bottom: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.summary-value {
+  color: #000;
+}
+
+.equal-width {
+  flex: 1;
+  min-width: 0; /* Ensure flexbox items shrink properly */
+}
+
+.summary-section {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #000;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-label {
+  font-weight: bold;
+  color: #212121;
+}
+
+.summary-value {
+  color: #000;
+}
+
