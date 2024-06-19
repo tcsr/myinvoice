@@ -20,6 +20,9 @@ const DashboardContent = () => {
         selectedSupplier={selectedSupplier}
         startDate={startDate}
         endDate={endDate}
+        showActionButtons={true}
+        showInvoiceMetrics={false}
+        showViewMoreButton={true}
       />
     </>
   );

@@ -16,6 +16,8 @@ const ViewInvoiceContent = () => {
         showGenerateDeleteButtons={false}
         showActionButtons={true}
         showInvoiceMetrics={true}
+        showSubmitAction = {true}
+        showViewMoreButton={true}
       />
     </>
   );

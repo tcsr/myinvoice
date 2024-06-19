@@ -18,6 +18,9 @@ import {
     AccordionDetails,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { API_ENDPOINTS } from "../api/apiEndpoints";
+import useApi from "../hooks/useApi";
+import Loading from '../components/loader/Loading';
 
 const dummyData = {
     supplierInfo: {
@@ -75,31 +78,31 @@ const dummyData = {
 
 const InvoiceDetails = () => {
     const { id } = useParams();
+
     const [invoiceData, setInvoiceData] = useState(dummyData);
+    const { get, post, del, loading, error } = useApi();
 
     useEffect(() => {
-        // You can replace this with an actual API call to fetch the invoice data
-        // const fetchInvoiceData = async () => {
-        //   try {
-        //     const response = await axios.get(`/api/invoices/${id}`);
-        //     setInvoiceData(response.data);
-        //   } catch (error) {
-        //     console.error('Error fetching invoice data:', error);
-        //   }
-        // };
-
-        // fetchInvoiceData();
+        const fetchInvoiceData = async () => {
+            try {
+                const response = await get(`${API_ENDPOINTS.GET_INVOICE_DETAILS}/${id}`);
+                console.log(response);
+                setInvoiceData(response);
+            } catch (error) {
+                console.error('Error fetching invoice data:', error);
+            }
+        };
+        fetchInvoiceData();
     }, [id]);
 
-    if (!invoiceData) {
-        return <Typography sx={{ fontWeight: 'bold' }}>Loading...</Typography>;
+    if (loading) {
+        return <Loading />;
     }
 
     const { supplierInfo, buyerInfo, invoiceDetails, productDetails, paymentInfo } = invoiceData;
 
     return (
         <Box p={3}>
-            <Typography variant="h4" gutterBottom>New Invoice</Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={4}>
                     <Typography variant="h6" gutterBottom>Upload Invoice</Typography>

@@ -16,6 +16,8 @@ const LatestInvoiceList = ({
   showGenerateDeleteButtons = false,
   showActionButtons = false,
   showInvoiceMetrics,
+  showSubmitAction = false,
+  showViewMoreButton = false
 }) => {
   const [data, setData] = useState([]);
   const [isError, setIsError] = useState(false);
@@ -231,6 +233,8 @@ const LatestInvoiceList = ({
         showGenerateDeleteButtons={showGenerateDeleteButtons}
         showInvoiceMetrics={showInvoiceMetrics}
         showActionButtons={showActionButtons}
+        showViewMoreButton={showViewMoreButton}
+        showSubmitAction={showSubmitAction}
       />
 
       <DetailsDialog

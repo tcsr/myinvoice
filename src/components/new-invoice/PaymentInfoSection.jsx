@@ -101,6 +101,7 @@ const PaymentInfoSection = ({
             showIcon
             dateFormat="dd/mm/yy"
             style={{ width: "100%" }}
+            appendTo={'self'}
             className={errors.paymentDate ? "p-invalid" : ""}
           />
           {errors.paymentDate && (

@@ -76,9 +76,9 @@ const NavMenu = ({
                 </MenuItem>
                 <MenuItem
                     component={NavLink}
-                    to="/view-generate"
+                    to="/generate"
                     onClick={() => handleMenuClose("generateMenuAnchorEl")}
-                    sx={location.pathname === "/view-generate" ? activeStyle : {}}
+                    sx={location.pathname === "/generate" ? activeStyle : {}}
                     className="menu-button-style"
                 >
                     <TextSnippetOutlinedIcon sx={{ marginRight: 1 }} />

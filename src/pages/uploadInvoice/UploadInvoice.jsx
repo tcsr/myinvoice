@@ -101,6 +101,7 @@ function UploadInvoice() {
   ] = useState([]);
   const [msicCodeOptions, setMsicCodeOptions] = useState([]);
   const [businessActivityOptions, setBusinessActivityOptions] = useState([]);
+  const [classificationOptions, setClassificationOptions] = useState([]);
   const totalInvoices = 15;
   const [rows, setRows] = useState([
     {
@@ -133,7 +134,27 @@ function UploadInvoice() {
     fetchPaymentMode();
     calculateSummary();
     fetchMsicCode();
+    fetchClassificationList();
   }, [rows]);
+
+  const fetchClassificationList = async () => {
+    try {
+      const response = await get(API_ENDPOINTS.GET_CLASSIFICATION);
+
+      if (!response) {
+        throw new Error("Failed to fetch");
+      }
+      const classification = response;
+      const data = classification.map((c) => ({
+        id: c.id,
+        label: c.description,
+        value: c.code,
+      }));
+      setClassificationOptions(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const fetchMsicCode = async () => {
     try {
@@ -143,32 +164,6 @@ function UploadInvoice() {
         throw new Error("Failed to fetch");
       }
       const msicBusinessActivityMapping = response;
-      // const msicBusinessActivityMapping = [
-      //   {
-      //     id: 1,
-      //     code: "00000",
-      //     description: "NOT APPLICABLE",
-      //     category: "",
-      //   },
-      //   {
-      //     id: 2,
-      //     code: "01111",
-      //     description: "Growing of maize",
-      //     category: "A",
-      //   },
-      //   {
-      //     id: 3,
-      //     code: "01112",
-      //     description: "Growing of leguminous crops",
-      //     category: "A",
-      //   },
-      //   {
-      //     id: 4,
-      //     code: "01113",
-      //     description: "Growing of oil seeds",
-      //     category: "A",
-      //   },
-      // ];
       setMsicCodeAndBusinessActivityOptions(msicBusinessActivityMapping);
       const msicCodeOptions = msicBusinessActivityMapping.map((item) => ({
         id: item.id,
@@ -448,29 +443,24 @@ function UploadInvoice() {
         },
       ]);
     } else {
-      alert(
-        "Please fill out all fields in the previous row before adding a new row."
-      );
+      setSnackbar({
+        open: true,
+        message:
+          "Please fill out all fields in the previous row before adding a new row.",
+        severity: "error",
+      });
     }
   };
 
   const isPreviousRowFilled = (index) => {
     const row = rows[index];
-    return Object.values(row).every((value) => value !== "");
+    return Object.entries(row).every(([key, value]) => {
+      if (key === "discount") {
+        return true;
+      }
+      return value !== "";
+    });
   };
-
-  const classification = [
-    { Code: "001", Description: "Breastfeeding equipment" },
-    { Code: "002", Description: "Child care centres and kindergartens fees" },
-    { Code: "003", Description: "Computer, smartphone or tablet" },
-    { Code: "004", Description: "Consolidated e-Invoice" },
-    { Code: "005", Description: "Construction materials" },
-  ];
-
-  const classificationOptions = classification.map((c) => ({
-    label: c.Description,
-    value: c.Code,
-  }));
 
   const handleDropdownSelectClassificationChange = (event, field, index) => {
     const updatedRows = [...rows];
@@ -593,62 +583,24 @@ function UploadInvoice() {
     setValidationDateTime(e.value);
   };
 
-  // const msicBusinessActivityMapping = [
-  //   {
-  //     id: 1,
-  //     code: "00000",
-  //     description: "NOT APPLICABLE",
-  //     category: "",
-  //   },
-  //   {
-  //     id: 2,
-  //     code: "01111",
-  //     description: "Growing of maize",
-  //     category: "A",
-  //   },
-  //   {
-  //     id: 3,
-  //     code: "01112",
-  //     description: "Growing of leguminous crops",
-  //     category: "A",
-  //   },
-  //   {
-  //     id: 4,
-  //     code: "01113",
-  //     description: "Growing of oil seeds",
-  //     category: "A",
-  //   },
-  // ];
-
-  // const handleSupplierSignFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   if (!file) {
-  //     setSupplierSignatureError("Please upload a file.");
-  //     return;
-  //   }
-
-  //   if (file.size > 100 * 1024) {
-  //     setSupplierSignatureError(
-  //       "Image size exceeds 100kb. Please upload an image with a maximum size of 100kb."
-  //     );
-  //     event.target.value = null;
-  //     return;
-  //   }
-
-  //   setSupplierDigiSign(file.name);
-  //   setSupplierSignatureError("");
-  // };
   const handleSupplierSignFileChange = (event) => {
     const file = event.target.files[0];
-    if (!file) {
-      setSupplierSignatureError("Please upload a file.");
-      return;
-    }
+    // if (!file) {
+    //   // setSupplierSignatureError("Please upload a file.");
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     supplierDigiSign: "Supplier’s Digital Signature is required",
+    //   }));
+    //   console.log("No file uploaded");
+    //   return;
+    // }
 
     if (file.size > 100 * 1024) {
-      setSupplierSignatureError(
-        "Image size exceeds 100kb. Please upload an image with a maximum size of 100kb."
-      );
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        supplierDigiSign:
+          "Image size exceeds 100kb. Please upload an image with a maximum size of 100kb.",
+      }));
       event.target.value = null;
       return;
     }
@@ -658,14 +610,15 @@ function UploadInvoice() {
       const base64String = reader.result
         .replace("data:", "")
         .replace(/^.+,/, "");
-      // Now you can send the base64String to your API
-      console.log("Base64 String:", base64String);
-      // Example: setBase64Signature(base64String);
     };
     reader.readAsDataURL(file);
 
     setSupplierDigiSign(file.name);
-    setSupplierSignatureError("");
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      supplierDigiSign: "",
+    }));
+    // setSupplierSignatureError("");
   };
 
   const handleDropdownChange = (e) => {
@@ -725,6 +678,8 @@ function UploadInvoice() {
     setBuyerContactNumber("");
     setBuyerAddress("");
     setBuyerCityName("");
+    setBuyerStateName("");
+    setBuyerCountry("");
     setBuyerTaxIDNumber("");
     setBuyerPassportIdNumber("");
     setBuyerSstRegNumber("");
@@ -961,8 +916,6 @@ function UploadInvoice() {
               businessActivityDesc={businessActivityDesc}
               businessActivityOptions={businessActivityOptions}
               setBusinessActivityDesc={setBusinessActivityDesc}
-              supplierDigiSign={supplierDigiSign}
-              setSupplierDigiSign={setSupplierDigiSign}
               stateOptions={stateOptions}
               countryOptions={countryOptions}
               handleStateDropdownChange={handleStateDropdownChange}
@@ -1045,6 +998,37 @@ function UploadInvoice() {
               handleValidationDateChange={handleValidationDateChange}
               invoiceType={invoiceType}
               currencyCode={currencyCode}
+              errors={errors}
+            />
+            <BuyerInfoSection
+              isExpanded={isBuyerInfoExpanded}
+              toggleExpand={toggleBuyerInfo}
+              buyerName={buyerName}
+              setBuyerName={setBuyerName}
+              buyerEmailAddress={buyerEmailAddress}
+              setBuyerEmailAddress={setBuyerEmailAddress}
+              buyerContactNumber={buyerContactNumber}
+              setBuyerContactNumber={setBuyerContactNumber}
+              buyerAddress={buyerAddress}
+              setBuyerAddress={setBuyerAddress}
+              buyerCityName={buyerCityName}
+              setBuyerCityName={setBuyerCityName}
+              buyerStateName={buyerStateName}
+              setBuyerStateName={setBuyerStateName}
+              buyerCountry={buyerCountry}
+              setBuyerCountry={setBuyerCountry}
+              buyerTaxIDNumber={buyerTaxIDNumber}
+              setBuyerTaxIDNumber={setBuyerTaxIDNumber}
+              buyerPassportIdNumber={buyerPassportIdNumber}
+              setBuyerPassportIdNumber={setBuyerPassportIdNumber}
+              buyerSstRegNumber={buyerSstRegNumber}
+              setBuyerSstRegNumber={setBuyerSstRegNumber}
+              stateOptions={stateOptions}
+              countryOptions={countryOptions}
+              handleBuyerStateDropdownChange={handleBuyerStateDropdownChange}
+              handleBuyerCountryDropdownChange={
+                handleBuyerCountryDropdownChange
+              }
               errors={errors}
             />
             <ProductDetailsSection

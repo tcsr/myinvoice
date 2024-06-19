@@ -32,6 +32,8 @@ const MainTableComponent = ({
   showGenerateDeleteButtons,
   showActionButtons,
   showInvoiceMetrics,
+  showViewMoreButton,
+  showSubmitAction,
   fetchData, // A function prop to refetch data
 }) => {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -224,6 +226,8 @@ const MainTableComponent = ({
     showGenerateDeleteButtons,
     showActionButtons,
     showInvoiceMetrics,
+    showSubmitAction,
+    showViewMoreButton,
     onGenerateInvoice: (selectedRows) => {
       setSelectedRows(selectedRows);
       handleGenerateInvoice(selectedRows);
@@ -292,6 +296,10 @@ const MainTableComponent = ({
         severity: "error",
       });
     }
+    finally {
+      setIsSubmitting(false);
+      fetchData();
+    }
   };
 
   useEffect(() => {
@@ -330,8 +338,8 @@ const MainTableComponent = ({
           justifyContent: "center",
           alignItems: "center",
           margin: "2rem",
-          height: "100%",
-          width: "100%",
+          height: "95%",
+          width: "95%",
         }}
       >
         <CircularProgress size={35} />

@@ -14,6 +14,7 @@ import {
   Paper,
 } from "@mui/material";
 import { formatDateIntoReadableFormat } from "../../utils/index";
+import getStatusChip from "../../utils/getStatusChip";
 
 const DetailsDialog = ({ open, onClose, rowData }) => {
   const handleClose = (event, reason) => {
@@ -21,6 +22,22 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
       onClose();
     }
   };
+
+  const formatJSON = (json) => {
+    if (typeof json === 'string') {
+      try {
+        json = JSON.parse(json);
+      } catch (e) {
+        return <Typography variant="body2" color="error">{json}</Typography>;
+      }
+    }
+    return (
+      <Box component="pre" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+        {JSON.stringify(json, null, 2)}
+      </Box>
+    );
+  };
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>IRBM Response Details</DialogTitle>
@@ -35,7 +52,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {rowData.counterParty}
+                      {rowData?.counterParty}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -44,7 +61,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                     <Typography variant="subtitle2">Doc Type</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{rowData.docType}</Typography>
+                    <Typography variant="body2">{rowData?.docType}</Typography>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -52,7 +69,9 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                     <Typography variant="subtitle2">Doc Number</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{rowData.docNumber}</Typography>
+                    <Typography variant="body2">
+                      {rowData?.docNumber}
+                    </Typography>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -62,7 +81,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   <TableCell>
                     <Typography variant="body2">
                       {rowData.docDate
-                        ? formatDateIntoReadableFormat(rowData.docDate)
+                        ? formatDateIntoReadableFormat(rowData?.docDate)
                         : "-"}
                     </Typography>
                   </TableCell>
@@ -75,7 +94,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {rowData.generatedNumber}
+                      {rowData?.generatedNumber}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -85,7 +104,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {rowData.invoiceType}
+                      {rowData?.invoiceType}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -95,7 +114,7 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {rowData.invoiceValue}
+                      {rowData?.invoiceValue}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -105,25 +124,25 @@ const DetailsDialog = ({ open, onClose, rowData }) => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {rowData.irbmResponse}
+                      {getStatusChip(rowData?.irbmResponse)}
                     </Typography>
                   </TableCell>
                 </TableRow>
                 {(rowData.irbmResponse === "Error" ||
                   rowData.irbmResponse === "Rejected") && (
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      <Typography variant="subtitle2" color="error">
-                        Reason
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="error">
-                        {rowData.reason}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        <Typography variant="subtitle2">
+                          Reason
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="error">
+                          {rowData?.reason ? formatJSON(rowData.reason) : 'N/A'}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
               </TableBody>
             </Table>
           </TableContainer>

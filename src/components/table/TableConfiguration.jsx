@@ -1,23 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useMaterialReactTable } from "material-react-table";
 import { IconButton, Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import TableToolbarActions from "./TableToolbarActions";
 import TableToolbarInternalActions from "./TableToolbarInternalActions";
 import DetailPanel from "./DetailPanel";
-import close_icon from "../../assets/images/close.svg";
 import MotionPlayIcon from "../../assets/images/motion-play-outline.svg";
-//Material UI Imports
-import {
-  Box,
-  Button,
-  ListItemIcon,
-  MenuItem,
-  Typography,
-  lighten,
-} from "@mui/material";
-
-//Icons Imports
-import { AccountCircle, Send } from "@mui/icons-material";
+// Icons Imports
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Fade from "@mui/material/Fade";
 
 const TableConfiguration = ({
   columns,
@@ -49,7 +42,32 @@ const TableConfiguration = ({
   showGenerateDeleteButtons,
   showActionButtons,
   showInvoiceMetrics,
+  showSubmitAction = false,
+  showViewMoreButton = false,
 }) => {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentRow, setCurrentRow] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentRow(row);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentRow(null);
+  };
+
+  const handleViewDetails = () => {
+    const { id } = currentRow;
+    setAnchorEl(null);
+    if (id) {
+      navigate(`/invoice-details/${id}`);
+    }
+  };
+
   const table = useMaterialReactTable({
     columns,
     data,
@@ -85,8 +103,8 @@ const TableConfiguration = ({
       density: "compact",
       pagination: { pageSize: 10, pageIndex: 0 },
       columnPinning: {
-        left: ['mrt-row-expand', 'mrt-row-select'],
-        right: ['irbmResponse','mrt-row-actions'],
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["irbmResponse", "mrt-row-actions"],
       },
     },
     muiCircularProgressProps: {
@@ -108,15 +126,6 @@ const TableConfiguration = ({
       sx: { minWidth: "20rem" },
       variant: "outlined",
       onChange: (e) => handleGlobalFilterChange(e.target.value),
-      // InputProps: {
-      //     endAdornment: globalFilter ? (
-      //         <Tooltip title="Clear Search">
-      //             <IconButton onClick={() => handleGlobalFilterChange('')}>
-      //                 <img src={close_icon} />
-      //             </IconButton>
-      //         </Tooltip>
-      //     ) : null,
-      // },
     },
     muiSelectCheckboxProps: ({ row }) => ({
       size: "small",
@@ -181,54 +190,73 @@ const TableConfiguration = ({
     }, []),
     renderRowActions: ({ row }) =>
       showActionButtons ? (
-        <>
-          <Tooltip title={"Submit"}>
-            <IconButton onClick={() => onSubmitInvoice(row.original)}>
-              <img src={MotionPlayIcon} />
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "nowrap",
+            gap: "0.35rem",
+          }}
+        >
+          {showSubmitAction &&
+            <Tooltip title={"Submit"}>
+              <IconButton onClick={() => onSubmitInvoice(row.original)}>
+                <img src={MotionPlayIcon} />
+              </IconButton>
+            </Tooltip>
+          }
+          {showViewMoreButton && (
+            <IconButton
+              aria-controls={open ? "action-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              onClick={(event) => handleClick(event, row.original)}
+              id="action-button"
+            >
+              <MoreHorizIcon />
             </IconButton>
-          </Tooltip>
-        </>
+          )}
+          <Menu
+            id="action-menu"
+            MenuListProps={{
+              "aria-labelledby": "action-button",
+            }}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            TransitionComponent={Fade}
+            PaperProps={{
+              elevation: 1,
+              sx: {
+                backgroundColor: 'background.paper',
+                mt: 1.5,
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow
+                width: '200px', // Increase width
+                maxHeight: '110px', // Reduce height
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+          >
+            <MenuItem sx={{ height: '30px' }} onClick={handleViewDetails}>View Details</MenuItem>
+          </Menu>
+        </div>
       ) : null,
-    renderRowActionMenuItems: ({ closeMenu }) =>
-      showActionButtons
-        ? [
-            <MenuItem
-              key={0}
-              onClick={() => {
-                closeMenu();
-              }}
-              sx={{ m: 0 }}
-            >
-              View Details
-            </MenuItem>,
-            <MenuItem
-              key={1}
-              onClick={() => {
-                // View profile logic...
-                closeMenu();
-              }}
-              sx={{ m: 0 }}
-            >
-              <ListItemIcon>
-                <AccountCircle />
-              </ListItemIcon>
-              View Profile
-            </MenuItem>,
-            <MenuItem
-              key={2}
-              onClick={() => {
-                // Send email logic...
-                closeMenu();
-              }}
-              sx={{ m: 0 }}
-            >
-              <ListItemIcon>
-                <Send />
-              </ListItemIcon>
-              Send Email
-            </MenuItem>,
-          ]
-        : [],
   });
 
   return table;

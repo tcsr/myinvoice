@@ -15,6 +15,8 @@ const GenerateInvoiceContent = () => {
         endDate={endDate}
         showActionButtons={true}
         showGenerateDeleteButtons={true}
+        showSubmitAction = {true}
+        showViewMoreButton={true}
       />
     </>
   );

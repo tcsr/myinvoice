@@ -69,6 +69,7 @@ const HeaderControls = ({ title }) => {
             onChange={(e) => setDate(e.value)}
             numberOfMonths={2}
             selectionMode="range"
+            maxDate= {new Date()}
             showIcon
           />
           <Button
