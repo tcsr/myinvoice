@@ -17,7 +17,8 @@ const LatestInvoiceList = ({
   showActionButtons = false,
   showInvoiceMetrics,
   showSubmitAction = false,
-  showViewMoreButton = false
+  showViewMoreButton = false,
+  source = null
 }) => {
   const [data, setData] = useState([]);
   const [isError, setIsError] = useState(false);

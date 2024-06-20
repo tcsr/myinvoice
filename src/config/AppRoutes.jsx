@@ -1,4 +1,5 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import GenerateInvoice from "../pages/GenerateInvoice";
 import ViewInvoice from "../pages/ViewInvoice";
@@ -8,8 +9,26 @@ import MyProfile from "../pages/MyProfile";
 import ChangePassword from "../components/user/ChangePassword";
 import ProtectedRoute from "../components/prtotected/ProtectedRoute";
 import InvoiceDetails from "../pages/InvoiceDetails";
+import { useKeycloak } from "../context/KeycloakProvider";
 
 const AppRoutes = () => {
+
+  const navigate = useNavigate();
+  const { keycloakInitialized } = useKeycloak();
+  const [redirectHandled, setRedirectHandled] = useState(false);
+
+  useEffect(() => {
+    if (keycloakInitialized && !redirectHandled) {
+      const freshLogin = localStorage.getItem('freshLogin');
+      if (freshLogin === 'true') {
+        navigate('/dashboard', { replace: true });
+        localStorage.removeItem('freshLogin'); // Reset fresh login flag after redirection
+        setRedirectHandled(true);
+      }
+    }
+  }, [keycloakInitialized, redirectHandled, navigate]);
+
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/home" replace />} />

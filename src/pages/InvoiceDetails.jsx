@@ -21,6 +21,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { API_ENDPOINTS } from "../api/apiEndpoints";
 import useApi from "../hooks/useApi";
 
+import { useNavigate, useLocation } from 'react-router-dom';
+
 const fallbackData = {
   supplierInfo: {
     name: null,
@@ -79,12 +81,27 @@ const InvoiceDetails = () => {
       }
     };
     fetchInvoiceData();
-  }, [id, get]);
+  }, [id]);
 
   const { supplierInfo, buyerInfo, invoiceDetails, productDetails, paymentInfo } = invoiceData;
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleBack = () => {
+    const previousPath = location.state?.from?.pathname;
+    if (previousPath === '/view-invoice' || previousPath === '/generate') {
+      navigate(-1);
+    } else {
+      navigate('/home');
+    }
+
+  }
+
   return (
     <Box p={3}>
+
+      <Button onClick={handleBack} >Go Back</Button>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Typography variant="h6" gutterBottom>Upload Invoice</Typography>

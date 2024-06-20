@@ -31,10 +31,19 @@ const KeycloakProvider = ({ children }) => {
                     const profile = await keycloak.loadUserProfile();
                     updateUserProfile(profile);
 
+                    // Set fresh login flag in localStorage only if it's not already set
+                    if (!localStorage.getItem('freshLogin')) {
+                        localStorage.setItem('freshLogin', 'true');
+                    }
+
                     keycloak.onTokenExpired = () => {
                         keycloak.updateToken(5).catch(() => {
                             keycloak.login();
                         });
+                    };
+
+                    keycloak.onAuthRefreshSuccess = () => {
+                        // Token refreshed, no need to set fresh login flag
                     };
                 }
             } catch (error) {
@@ -48,7 +57,7 @@ const KeycloakProvider = ({ children }) => {
 
     if (!keycloakInitialized) {
         return <Loading />;
-      }
+    }
 
     return (
         <KeycloakContext.Provider value={{ keycloak, keycloakInitialized }}>

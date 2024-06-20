@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMaterialReactTable } from "material-react-table";
 import { IconButton, Tooltip } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import TableToolbarActions from "./TableToolbarActions";
 import TableToolbarInternalActions from "./TableToolbarInternalActions";
 import DetailPanel from "./DetailPanel";
@@ -46,6 +46,8 @@ const TableConfiguration = ({
   showViewMoreButton = false,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentRow, setCurrentRow] = useState(null);
   const open = Boolean(anchorEl);
@@ -64,7 +66,7 @@ const TableConfiguration = ({
     const { id } = currentRow;
     setAnchorEl(null);
     if (id) {
-      navigate(`/invoice-details/${id}`);
+      navigate(`/invoice-details/${id}`, { state: { from: { pathname: location.pathname } } });
     }
   };
 
