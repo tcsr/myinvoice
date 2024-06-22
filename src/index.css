@@ -498,3 +498,7 @@ padding: 25px;
   border-radius: 2rem !important;
   border: none !important;
 }
+
+.invoice-details-container {
+  background-color: #FFFFFF;
+}

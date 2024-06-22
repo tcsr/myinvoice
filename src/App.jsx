@@ -9,18 +9,18 @@ import AppRoutes from "./config/AppRoutes";
 const App = () => {
   return (
     <>
-      <Router>
-        <UserDetailsProvider>
-          <KeycloakProvider>
+      <UserDetailsProvider>
+        <KeycloakProvider>
+          <Router>
             <CssBaseline />
             <Header />
             <div className="border-none layout-main-container">
               <AppRoutes />
             </div>
-            <Footer />
-          </KeycloakProvider>
-        </UserDetailsProvider>
-      </Router>
+          </Router>
+          <Footer />
+        </KeycloakProvider>
+      </UserDetailsProvider>
     </>
   );
 };

@@ -119,7 +119,7 @@ const NavMenu = ({
                     <TextSnippetOutlinedIcon sx={{ marginRight: 1 }} />
                     View Invoice
                 </MenuItem>
-                <MenuItem
+                {/* <MenuItem
                     component={NavLink}
                     to="/search-invoice"
                     onClick={() => handleMenuClose("manageMenuAnchorEl")}
@@ -128,7 +128,7 @@ const NavMenu = ({
                 >
                     <SearchIcon sx={{ marginRight: 1 }} />
                     Search Invoice
-                </MenuItem>
+                </MenuItem> */}
             </Menu>
         </>
     );

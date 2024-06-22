@@ -34,6 +34,7 @@ const MainTableComponent = ({
   showInvoiceMetrics,
   showViewMoreButton,
   showSubmitAction,
+  showDetailsPanel = false,
   fetchData, // A function prop to refetch data
 }) => {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -232,6 +233,7 @@ const MainTableComponent = ({
     showInvoiceMetrics,
     showSubmitAction,
     showViewMoreButton,
+    showDetailsPanel,
     onGenerateInvoice: (selectedRows) => {
       setSelectedRows(selectedRows);
       handleGenerateInvoice(selectedRows);

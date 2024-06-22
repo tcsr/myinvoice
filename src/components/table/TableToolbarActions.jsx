@@ -27,21 +27,21 @@ const TableToolbarActions = ({
           <Typography variant="body2" sx={{ mx: 2 }}>
             Success
             <Typography component="span" sx={{ fontWeight: "bold", pl: 1 }}>
-              05
+              00
             </Typography>
           </Typography>
           <Divider orientation="vertical" variant="middle" flexItem />
           <Typography variant="body2" sx={{ mx: 2 }}>
             Error
             <Typography component="span" sx={{ fontWeight: "bold", pl: 1 }}>
-              03
+              00
             </Typography>
           </Typography>
           <Divider orientation="vertical" variant="middle" flexItem />
           <Typography variant="body2" sx={{ mx: 2 }}>
             Rejected
             <Typography component="span" sx={{ fontWeight: "bold", pl: 1 }}>
-              02
+              00
             </Typography>
           </Typography>
         </Box>

@@ -1,14 +1,15 @@
 import { useContext } from "react";
 import HeaderControls from "../components/header-controls/HeaderControls";
 import HeaderProvider, { HeaderContext } from "../context/HeaderContext";
-import LatestInvoiceList from "../components/invoice/LatestInvoiceList";
+// import LatestInvoiceList from "../components/invoice/LatestInvoiceList";
+import ViewInvoiceList from "../components/invoice/ViewInvoiceList";
 
 const ViewInvoiceContent = () => {
   const { selectedSupplier, startDate, endDate } = useContext(HeaderContext);
   return (
     <>
       <HeaderControls title="View Invoice" />
-      <LatestInvoiceList
+      <ViewInvoiceList
         heading={"Invoice List"}
         selectedSupplier={selectedSupplier}
         startDate={startDate}
@@ -16,8 +17,9 @@ const ViewInvoiceContent = () => {
         showGenerateDeleteButtons={false}
         showActionButtons={true}
         showInvoiceMetrics={true}
-        showSubmitAction = {true}
+        showSubmitAction={false}
         showViewMoreButton={true}
+        showDetailsPanel={true}
       />
     </>
   );

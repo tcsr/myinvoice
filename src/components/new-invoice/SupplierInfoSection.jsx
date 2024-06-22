@@ -1,8 +1,63 @@
 import React from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { FileUpload } from "primereact/fileupload";
+// Utility function to handle input change and clear error
+const handleInputChange = (setter, field, errors, setErrors) => (e) => {
+  const value = e.target.value;
+  setter(value);
+  if (field === "emailAddress") {
+    const isValidEmail = validateEmail(value);
+    if (!isValidEmail) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: "Invalid email format",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: null,
+      }));
+    }
+  } else if (field === "contactNumber") {
+    const isValidContactNumber = validateContactNumber(value);
+    if (!isValidContactNumber) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: "Contact number must be numeric",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: null,
+      }));
+    }
+  } else if (errors[field]) {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: null,
+    }));
+  }
+};
+// Validation function for email format
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(String(email).toLowerCase());
+};
+// Validation function for numeric contact number
+const validateContactNumber = (number) => {
+  return /^\d+$/.test(number);
+};
 
+// Utility function to handle dropdown change and clear error
+const handleDropdownChange = (setter, field, errors, setErrors) => (e) => {
+  setter(e.value);
+  if (errors[field]) {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: "",
+    }));
+  }
+};
 const SupplierInfoSection = ({
   isExpanded,
   toggleExpand,
@@ -40,12 +95,8 @@ const SupplierInfoSection = ({
   handleCountryDropdownChange,
   handleMsicCodeAndBusinessActivityDropdownChange,
   handlesetBusinessActivityDescDropdownChange,
-  supplierSignatureError,
-  setSupplierSignatureError,
-  handleSupplierSignFileChange,
-  supplierDigiSign,
-  setSupplierDigiSign,
   errors,
+  setErrors,
 }) => {
   return (
     <div>
@@ -66,11 +117,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>Supplier Name</p>
               <div className="p-field">
                 <InputText
-                  // style={{ width: 290 }}
                   id="supplierName"
                   placeholder="Enter name"
                   value={supplierName}
-                  onChange={(e) => setSupplierName(e.target.value)}
+                  onChange={handleInputChange(
+                    setSupplierName,
+                    "supplierName",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.supplierName ? "p-invalid" : ""}
                 />
                 {errors.supplierName && (
@@ -84,11 +139,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>Email Address</p>
               <div className="p-field">
                 <InputText
-                  // style={{ width: 290 }}
                   id="emailAddress"
                   placeholder="Enter"
                   value={emailAddress}
-                  onChange={(e) => setEmailAddress(e.target.value)}
+                  onChange={handleInputChange(
+                    setEmailAddress,
+                    "emailAddress",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.emailAddress ? "p-invalid" : ""}
                 />
                 {errors.emailAddress && (
@@ -102,11 +161,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>Contact Number</p>
               <div className="p-field">
                 <InputText
-                  // style={{ width: 290 }}
                   id="contactNumber"
                   placeholder="Enter"
                   value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
+                  onChange={handleInputChange(
+                    setContactNumber,
+                    "contactNumber",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.contactNumber ? "p-invalid" : ""}
                 />
                 {errors.contactNumber && (
@@ -125,7 +188,12 @@ const SupplierInfoSection = ({
                 id="address"
                 placeholder="Enter"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={handleInputChange(
+                  setAddress,
+                  "address",
+                  errors,
+                  setErrors
+                )}
                 className={errors.address ? "p-invalid" : ""}
               />
               {errors.address && (
@@ -140,11 +208,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>City Name</p>
               <div className="p-field">
                 <InputText
-                  //style={{ width: 290 }}
                   id="cityName"
                   placeholder="Enter"
                   value={cityName}
-                  onChange={(e) => setCityName(e.target.value)}
+                  onChange={handleInputChange(
+                    setCityName,
+                    "cityName",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.cityName ? "p-invalid" : ""}
                 />
                 {errors.cityName && (
@@ -156,11 +228,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>State</p>
               <div className="p-field">
                 <Dropdown
-                  //style={{ width: 290 }}
                   id="supplierState"
                   value={supplierState}
                   options={stateOptions}
-                  onChange={handleStateDropdownChange}
+                  onChange={handleDropdownChange(
+                    setSupplierState,
+                    "supplierState",
+                    errors,
+                    setErrors
+                  )}
                   placeholder="Select"
                   className={errors.supplierState ? "p-invalid" : ""}
                 />
@@ -175,11 +251,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>Country</p>
               <div className="p-field">
                 <Dropdown
-                  //style={{ width: 290 }}
                   id="supplierCountry"
                   value={supplierCountry}
                   options={countryOptions}
-                  onChange={handleCountryDropdownChange}
+                  onChange={handleDropdownChange(
+                    setSupplierCountry,
+                    "supplierCountry",
+                    errors,
+                    setErrors
+                  )}
                   placeholder="Select"
                   className={errors.supplierCountry ? "p-invalid" : ""}
                 />
@@ -198,11 +278,15 @@ const SupplierInfoSection = ({
               </p>
               <div className="p-field">
                 <InputText
-                  //style={{ width: 290 }}
                   id="taxIDNumber"
                   placeholder="Enter"
                   value={taxIDNumber}
-                  onChange={(e) => setTaxIDNumber(e.target.value)}
+                  onChange={handleInputChange(
+                    setTaxIDNumber,
+                    "taxIDNumber",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.taxIDNumber ? "p-invalid" : ""}
                 />
                 {errors.taxIDNumber && (
@@ -218,11 +302,15 @@ const SupplierInfoSection = ({
               </p>
               <div className="p-field">
                 <InputText
-                  //style={{ width: 290 }}
                   id="passportIdNumber"
                   placeholder="Enter name"
                   value={passportIdNumber}
-                  onChange={(e) => setPassportIdNumber(e.target.value)}
+                  onChange={handleInputChange(
+                    setPassportIdNumber,
+                    "passportIdNumber",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.passportIdNumber ? "p-invalid" : ""}
                 />
                 {errors.passportIdNumber && (
@@ -238,11 +326,15 @@ const SupplierInfoSection = ({
               </p>
               <div className="p-field">
                 <InputText
-                  //style={{ width: 290 }}
                   id="sstRegNumber"
                   placeholder="Enter"
                   value={sstRegNumber}
-                  onChange={(e) => setSstRegNumber(e.target.value)}
+                  onChange={handleInputChange(
+                    setSstRegNumber,
+                    "sstRegNumber",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.sstRegNumber ? "p-invalid" : ""}
                 />
                 {errors.sstRegNumber && (
@@ -260,11 +352,15 @@ const SupplierInfoSection = ({
               </p>
               <div className="p-field">
                 <InputText
-                  //style={{ width: 290 }}
                   id="tourismRegNumber"
                   placeholder="Enter"
                   value={tourismRegNumber}
-                  onChange={(e) => setTourismRegNumber(e.target.value)}
+                  onChange={handleInputChange(
+                    setTourismRegNumber,
+                    "tourismRegNumber",
+                    errors,
+                    setErrors
+                  )}
                   className={errors.tourismRegNumber ? "p-invalid" : ""}
                 />
                 {errors.tourismRegNumber && (
@@ -278,10 +374,15 @@ const SupplierInfoSection = ({
               <p style={{ color: "#212121", fontSize: 14 }}>MSIC Code</p>
               <div className="p-field">
                 <Dropdown
-                  //style={{ width: 290 }}
                   id="msicCode"
                   value={msicCode}
                   options={msicCodeOptions}
+                  // onChange={handleDropdownChange(
+                  //   setMsicCode,
+                  //   "msicCode",
+                  //   errors,
+                  //   setErrors
+                  // )}
                   onChange={handleMsicCodeAndBusinessActivityDropdownChange}
                   placeholder="Select"
                   className={errors.msicCode ? "p-invalid" : ""}
@@ -299,10 +400,15 @@ const SupplierInfoSection = ({
               </p>
               <div className="p-field">
                 <Dropdown
-                  //style={{ width: 290 }}
                   id="businessActivityDesc"
                   value={businessActivityDesc}
                   options={businessActivityOptions}
+                  // onChange={handleDropdownChange(
+                  //   setBusinessActivityDesc,
+                  //   "businessActivityDesc",
+                  //   errors,
+                  //   setErrors
+                  // )}
                   onChange={handlesetBusinessActivityDescDropdownChange}
                   placeholder="Select"
                   className={errors.businessActivityDesc ? "p-invalid" : ""}

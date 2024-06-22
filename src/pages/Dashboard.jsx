@@ -23,6 +23,7 @@ const DashboardContent = () => {
         showActionButtons={true}
         showInvoiceMetrics={false}
         showViewMoreButton={true}
+        showDetailsPanel = {false}
       />
     </>
   );

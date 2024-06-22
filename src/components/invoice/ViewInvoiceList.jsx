@@ -7,9 +7,9 @@ import MainTableComponent from "../table/MainTableComponent";
 import getStatusChip from "../../utils/getStatusChip";
 import { truncateText, formatDateIntoReadableFormat } from "../../utils/index";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import DetailsDialog from "../../components/table/DetailsDialog";
+import DetailsDialog from "../table/DetailsDialog";
 
-const LatestInvoiceList = ({
+const ViewInvoiceList = ({
   heading,
   selectedSupplier,
   startDate,
@@ -107,9 +107,8 @@ const LatestInvoiceList = ({
     () => [
       {
         accessorKey: "counterParty",
-        header: "Counter Party",
+        header: "Supplier Name",
         size: 220,
-        enableSorting: false,
         Cell: ({ cell, row }) => (
           <Box
             sx={{
@@ -149,6 +148,23 @@ const LatestInvoiceList = ({
         ),
       },
       {
+        accessorKey: "generatedNumber",
+        header: "Generated Number",
+        size: 130,
+      },
+      {
+        accessorKey: "generatedOn",
+        header: "Generated On",
+        size: 130,
+        Cell: ({ cell, row }) => (
+          <Box>
+            {cell?.getValue()
+              ? formatDateIntoReadableFormat(cell?.getValue())
+              : "-"}
+          </Box>
+        ),
+      },
+      {
         accessorKey: "invoiceType",
         header: "Invoice Type",
         size: 70,
@@ -156,7 +172,6 @@ const LatestInvoiceList = ({
       {
         accessorKey: "invoiceValue",
         header: "Invoice Value",
-        enableSorting: false,
         size: 90,
         // muiTableBodyCellProps: {
         //   align: "right",
@@ -186,7 +201,7 @@ const LatestInvoiceList = ({
   );
 
   const requiredColumns = {
-    counterParty: "Counter Party",
+    counterParty: "Supplier Name",
     docType: "Doc Type",
     docNumber: "Doc Number",
     docDate: "Doc Date",
@@ -235,4 +250,4 @@ const LatestInvoiceList = ({
   );
 };
 
-export default LatestInvoiceList;
+export default ViewInvoiceList;

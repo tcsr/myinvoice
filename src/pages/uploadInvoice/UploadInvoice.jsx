@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import filedoc from "../../assets/images/tray-arrow-up.svg";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -22,6 +22,7 @@ import FooterSection from "../../components/new-invoice/FooterSection";
 import { Alert, Snackbar } from "@mui/material";
 
 function UploadInvoice() {
+  const calendarRef = useRef(null);
   const { get, post, del, loading, error } = useApi();
   const [validationMessage, setValidationMessage] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -155,7 +156,6 @@ function UploadInvoice() {
       console.error("Error fetching data:", error);
     }
   };
-
   const fetchMsicCode = async () => {
     try {
       const response = await get(API_ENDPOINTS.GET_MSIC_CODE);
@@ -164,6 +164,7 @@ function UploadInvoice() {
         throw new Error("Failed to fetch");
       }
       const msicBusinessActivityMapping = response;
+
       setMsicCodeAndBusinessActivityOptions(msicBusinessActivityMapping);
       const msicCodeOptions = msicBusinessActivityMapping.map((item) => ({
         id: item.id,
@@ -443,12 +444,9 @@ function UploadInvoice() {
         },
       ]);
     } else {
-      setSnackbar({
-        open: true,
-        message:
-          "Please fill out all fields in the previous row before adding a new row.",
-        severity: "error",
-      });
+      alert(
+        "Please fill out all fields in the previous row before adding a new row."
+      );
     }
   };
 
@@ -577,10 +575,16 @@ function UploadInvoice() {
 
   const handleDateChange = (e) => {
     setInvoiceDateTime(e.value);
+    if (calendarRef.current) {
+      calendarRef.current.hide();
+    }
   };
 
   const handleValidationDateChange = (e) => {
     setValidationDateTime(e.value);
+    if (calendarRef.current) {
+      calendarRef.current.hide();
+    }
   };
 
   const handleSupplierSignFileChange = (event) => {
@@ -626,7 +630,6 @@ function UploadInvoice() {
   };
 
   const handleStateDropdownChange = (e) => {
-    console.log(e);
     setSupplierState(e.value);
   };
 
@@ -715,6 +718,7 @@ function UploadInvoice() {
         totalAmount: "",
       },
     ]);
+    setErrors({});
     scrollToTop();
   };
 
@@ -849,7 +853,6 @@ function UploadInvoice() {
       };
       try {
         const response = await post(API_ENDPOINTS.CREATE_INVOICE, payload);
-        console.log("API Response:", response);
         if (response?.status == "Success") {
           setSnackbar({
             open: true,
@@ -916,6 +919,8 @@ function UploadInvoice() {
               businessActivityDesc={businessActivityDesc}
               businessActivityOptions={businessActivityOptions}
               setBusinessActivityDesc={setBusinessActivityDesc}
+              // supplierDigiSign={supplierDigiSign}
+              // setSupplierDigiSign={setSupplierDigiSign}
               stateOptions={stateOptions}
               countryOptions={countryOptions}
               handleStateDropdownChange={handleStateDropdownChange}
@@ -930,6 +935,7 @@ function UploadInvoice() {
               setSupplierSignatureError={setSupplierSignatureError}
               handleSupplierSignFileChange={handleSupplierSignFileChange}
               errors={errors}
+              setErrors={setErrors}
             />
             <BuyerInfoSection
               isExpanded={isBuyerInfoExpanded}
@@ -961,6 +967,7 @@ function UploadInvoice() {
                 handleBuyerCountryDropdownChange
               }
               errors={errors}
+              setErrors={setErrors}
             />
             <InvoiceDetailsSection
               isExpanded={isInvoiceDetailsInfoExpanded}
@@ -998,38 +1005,9 @@ function UploadInvoice() {
               handleValidationDateChange={handleValidationDateChange}
               invoiceType={invoiceType}
               currencyCode={currencyCode}
+              calendarRef={calendarRef}
               errors={errors}
-            />
-            <BuyerInfoSection
-              isExpanded={isBuyerInfoExpanded}
-              toggleExpand={toggleBuyerInfo}
-              buyerName={buyerName}
-              setBuyerName={setBuyerName}
-              buyerEmailAddress={buyerEmailAddress}
-              setBuyerEmailAddress={setBuyerEmailAddress}
-              buyerContactNumber={buyerContactNumber}
-              setBuyerContactNumber={setBuyerContactNumber}
-              buyerAddress={buyerAddress}
-              setBuyerAddress={setBuyerAddress}
-              buyerCityName={buyerCityName}
-              setBuyerCityName={setBuyerCityName}
-              buyerStateName={buyerStateName}
-              setBuyerStateName={setBuyerStateName}
-              buyerCountry={buyerCountry}
-              setBuyerCountry={setBuyerCountry}
-              buyerTaxIDNumber={buyerTaxIDNumber}
-              setBuyerTaxIDNumber={setBuyerTaxIDNumber}
-              buyerPassportIdNumber={buyerPassportIdNumber}
-              setBuyerPassportIdNumber={setBuyerPassportIdNumber}
-              buyerSstRegNumber={buyerSstRegNumber}
-              setBuyerSstRegNumber={setBuyerSstRegNumber}
-              stateOptions={stateOptions}
-              countryOptions={countryOptions}
-              handleBuyerStateDropdownChange={handleBuyerStateDropdownChange}
-              handleBuyerCountryDropdownChange={
-                handleBuyerCountryDropdownChange
-              }
-              errors={errors}
+              setErrors={setErrors}
             />
             <ProductDetailsSection
               isExpanded={isProductDetailsInfoExpanded}

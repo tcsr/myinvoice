@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMaterialReactTable } from "material-react-table";
-import { IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import TableToolbarActions from "./TableToolbarActions";
 import TableToolbarInternalActions from "./TableToolbarInternalActions";
@@ -44,6 +44,7 @@ const TableConfiguration = ({
   showInvoiceMetrics,
   showSubmitAction = false,
   showViewMoreButton = false,
+  showDetailsPanel = false,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,7 +67,9 @@ const TableConfiguration = ({
     const { id } = currentRow;
     setAnchorEl(null);
     if (id) {
-      navigate(`/invoice-details/${id}`, { state: { from: { pathname: location.pathname } } });
+      navigate(`/invoice-details/${id}`, {
+        state: { from: { pathname: location.pathname } },
+      });
     }
   };
 
@@ -96,7 +99,7 @@ const TableConfiguration = ({
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
-    positionToolbarAlertBanner: "bottom",
+    positionToolbarAlertBanner: "top",
     positionActionsColumn: "last",
     paginationDisplayMode: "pages",
     initialState: {
@@ -169,8 +172,8 @@ const TableConfiguration = ({
           requiredColumns={requiredColumns}
           columns={columns}
           data={data}
-          emailModalOpen={emailModalOpen} // Pass emailModalOpen
-          isColumnChooserOpen={isColumnChooserOpen} // Pass isColumnChooserOpen
+          emailModalOpen={emailModalOpen}
+          isColumnChooserOpen={isColumnChooserOpen}
         />
       );
       ToolbarInternalActions.displayName = "ToolbarInternalActions";
@@ -186,10 +189,11 @@ const TableConfiguration = ({
       isColumnChooserOpen,
     ]),
     renderDetailPanel: useMemo(() => {
+      if (!showDetailsPanel) return undefined;
       const RenderDetailPanel = ({ row }) => <DetailPanel row={row} />;
       RenderDetailPanel.displayName = "RenderDetailPanel";
       return RenderDetailPanel;
-    }, []),
+    }, [showDetailsPanel]),
     renderRowActions: ({ row }) =>
       showActionButtons ? (
         <div
@@ -199,13 +203,13 @@ const TableConfiguration = ({
             gap: "0.35rem",
           }}
         >
-          {showSubmitAction &&
+          {showSubmitAction && (
             <Tooltip title={"Submit"}>
               <IconButton onClick={() => onSubmitInvoice(row.original)}>
                 <img src={MotionPlayIcon} />
               </IconButton>
             </Tooltip>
-          }
+          )}
           {showViewMoreButton && (
             <IconButton
               aria-controls={open ? "action-menu" : undefined}
@@ -229,36 +233,41 @@ const TableConfiguration = ({
             PaperProps={{
               elevation: 1,
               sx: {
-                backgroundColor: 'background.paper',
+                backgroundColor: "background.paper",
                 mt: 1.5,
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow
-                width: '200px', // Increase width
-                maxHeight: '110px', // Reduce height
-                '& .MuiAvatar-root': {
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                width: "200px",
+                maxHeight: "110px",
+                "& .MuiAvatar-root": {
                   width: 32,
                   height: 32,
                   ml: -0.5,
                   mr: 1,
                 },
-                '&:before': {
+                "&:before": {
                   content: '""',
-                  display: 'block',
-                  position: 'absolute',
+                  display: "block",
+                  position: "absolute",
                   top: 0,
                   right: 14,
                   width: 10,
                   height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
+                  bgcolor: "background.paper",
+                  transform: "translateY(-50%) rotate(45deg)",
                   zIndex: 0,
                 },
               },
             }}
           >
-            <MenuItem sx={{ height: '30px' }} onClick={handleViewDetails}>View Details</MenuItem>
+            <MenuItem sx={{ height: "30px" }} onClick={handleViewDetails}>
+              View Details
+            </MenuItem>
           </Menu>
         </div>
       ) : null,
+    renderBottomToolbarCustomActions: () => (
+      <Box>Total Records : {rowCount}</Box>
+    ),
   });
 
   return table;
