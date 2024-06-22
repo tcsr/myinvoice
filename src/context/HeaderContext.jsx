@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi from "../hooks/useApi";
 import { API_ENDPOINTS } from "../api/apiEndpoints";
 import dayjs from "dayjs";
@@ -6,24 +7,40 @@ import dayjs from "dayjs";
 export const HeaderContext = createContext();
 
 const HeaderProvider = ({ children }) => {
-  const [supplierDetails, setSupplierDetails] = useState([]);
+  // const [supplierDetails, setSupplierDetails] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [date, setDate] = useState([null, null]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [refreshDataFlag, setRefreshDataFlag] = useState(false);
+  const selectedSupplierRef = useRef(null);
 
   const { get } = useApi();
+  const queryClient = useQueryClient();
 
   const fetchSupplierDetails = async () => {
-    try {
-      const data = await get(API_ENDPOINTS.GET_SUPPLIER_DETAILS);
-      setSupplierDetails(data);
-      setSelectedSupplier(data[0]);
-    } catch (error) {
-      console.error(error);
-    }
+    const data = await get(API_ENDPOINTS.GET_SUPPLIER_DETAILS);
+    return data;
   };
+
+  const { data: supplierDetails = [], refetch: refetchSupplierDetails } = useQuery({
+    queryKey: ['supplierDetails'],
+    queryFn: fetchSupplierDetails,
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      if (data.length > 0 && !selectedSupplier) {
+        setSelectedSupplier(data[0]);
+        selectedSupplierRef.current = data[0];
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (supplierDetails.length > 0 && !selectedSupplierRef.current) {
+      setSelectedSupplier(supplierDetails[0]);
+      selectedSupplierRef.current = supplierDetails[0];
+    }
+  }, [supplierDetails]);
 
   const setDefaultDateRange = () => {
     const currentDate = new Date();
@@ -32,14 +49,12 @@ const HeaderProvider = ({ children }) => {
       currentDate.getMonth(),
       1
     );
-    // const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     setDate([firstDay, currentDate]);
     setStartDate(dayjs(firstDay).format("YYYY-MM-DD"));
     setEndDate(dayjs(currentDate).format("YYYY-MM-DD"));
   };
 
   useEffect(() => {
-    fetchSupplierDetails();
     setDefaultDateRange();
   }, []);
 
@@ -53,7 +68,8 @@ const HeaderProvider = ({ children }) => {
   const refreshData = () => {
     setRefreshDataFlag((prevFlag) => !prevFlag); // Toggle flag to trigger useEffect in child components
     setDefaultDateRange();
-    fetchSupplierDetails();
+    queryClient.invalidateQueries('cardDetails'); // Invalidate the query for card details
+    refetchSupplierDetails();
   };
 
   return (

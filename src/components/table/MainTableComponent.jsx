@@ -69,6 +69,10 @@ const MainTableComponent = ({
   }, [refreshDataFlag]);
 
   useEffect(() => {
+    fetchData();
+  }, [fetchData, refreshDataFlag]);
+
+  useEffect(() => {
     const handler = setTimeout(() => {
       setGlobalFilter(searchTerm);
       setPagination((prev) => ({ ...prev, pageIndex: 0 })); // Reset to first page on new search

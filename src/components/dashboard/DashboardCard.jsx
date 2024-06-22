@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import chartbox from "../../assets/images/chart-box-outline.svg";
 import filedoc from "../../assets/images/file-document-check-outline.svg";
 import filedocalert from "../../assets/images/file-document-alert-outline.svg";
@@ -18,6 +17,7 @@ import {
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { styled } from "@mui/system";
 import dayjs from "dayjs";
+import { useQuery } from '@tanstack/react-query';
 
 const SourceSystemTodayTooltip = ({ data }) => (
   <Box>
@@ -168,30 +168,23 @@ const fallbackData = [
 ];
 
 const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
-  const [cardDetails, setCardDetails] = useState([]);
-  const { get, loading, error } = useApi();
+  const { get } = useApi();
 
   const fetchCardDetails = async () => {
     if (selectedSupplier && startDate && endDate) {
       const queryParams = `supplierCode=${selectedSupplier.code}&startDate=${startDate}&endDate=${endDate}`;
-
-      try {
-        const data = await get(
-          `${API_ENDPOINTS.GET_CARDS_DETAILS}?${queryParams}`
-        );
-        setCardDetails(data && data.length > 0 ? data : fallbackData);
-      } catch (error) {
-        console.log(error);
-        setCardDetails(fallbackData);
-      }
-    } else {
-      setCardDetails(fallbackData);
+      const data = await get(`${API_ENDPOINTS.GET_CARDS_DETAILS}?${queryParams}`);
+      return data && data.length > 0 ? data : fallbackData;
     }
+    return fallbackData;
   };
 
-  useEffect(() => {
-    fetchCardDetails();
-  }, [selectedSupplier, startDate, endDate]);
+  const { data: cardDetails = fallbackData, isLoading, isError, refetch } = useQuery({
+    queryKey: ['cardDetails', selectedSupplier, startDate, endDate],
+    queryFn: fetchCardDetails,
+    enabled: !!selectedSupplier && !!startDate && !!endDate,
+    refetchOnWindowFocus: false,
+  });
 
   const renderSkeleton = () => (
     <div className="grid gap-0 my-4">
@@ -244,7 +237,7 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
   const showTodayAndThisMonth =
     startDate && endDate && isSingleMonth(startDate, endDate);
 
-  if (loading) {
+  if (isLoading) {
     return renderSkeleton();
   }
 
@@ -273,9 +266,9 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                 >
                   <img src={styles.icon} alt={item.code} />
                 </div>
-                {error && (
+                {isError && (
                   <Tooltip title="Refresh">
-                    <IconButton onClick={fetchCardDetails}>
+                    <IconButton onClick={refetch}>
                       <RefreshIcon />
                     </IconButton>
                   </Tooltip>
@@ -367,7 +360,7 @@ const DashboardCard = ({ selectedSupplier, startDate, endDate }) => {
                   </>
                 )}
               </div>
-              {error && (
+              {isError && (
                 <div
                   style={{
                     display: "flex",

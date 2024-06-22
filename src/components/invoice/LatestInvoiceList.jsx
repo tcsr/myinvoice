@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
+import { useQuery } from '@tanstack/react-query';
 import useApi from "../../hooks/useApi";
 import { API_ENDPOINTS } from "../../api/apiEndpoints";
 import MainTableComponent from "../table/MainTableComponent";
@@ -21,9 +22,6 @@ const LatestInvoiceList = ({
   source = null
 }) => {
   const [data, setData] = useState([]);
-  const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -47,10 +45,7 @@ const LatestInvoiceList = ({
 
   const { get } = useApi();
 
-  const fetchLatestInvoiceDetails = async () => {
-    setIsLoading(true);
-    setIsRefetching(true);
-
+  const fetchLatestInvoiceDetails = useCallback(async () => {
     if (selectedSupplier && startDate && endDate) {
       const queryParams = new URLSearchParams({
         pageNumber: pagination.pageIndex,
@@ -65,35 +60,39 @@ const LatestInvoiceList = ({
         }),
       });
 
-      try {
-        const response = await get(
-          `${API_ENDPOINTS.GET_INVOICE_LIST}?${queryParams}`
-        );
-        setData(response.content);
-        setRowCount(response.totalElements);
-        setIsError(false);
-      } catch (error) {
-        console.log(error);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-        setIsRefetching(false);
-      }
+      const response = await get(`${API_ENDPOINTS.GET_INVOICE_LIST}?${queryParams}`);
+      return response;
     }
-  };
+    return { content: [], totalElements: 0 };
+  }, [
+    selectedSupplier, startDate, endDate, pagination.pageIndex,
+    pagination.pageSize, globalFilter, sorting, columnFilters, get
+  ]);
+
+  const { data: queryData, isLoading, refetch, isRefetching } = useQuery({
+    queryKey: [
+      'invoice-list',
+      selectedSupplier,
+      startDate,
+      endDate,
+      columnFilters,
+      globalFilter,
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
+    queryFn: fetchLatestInvoiceDetails,
+    enabled: !!selectedSupplier && !!startDate && !!endDate,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
 
   useEffect(() => {
-    fetchLatestInvoiceDetails();
-  }, [
-    selectedSupplier,
-    startDate,
-    endDate,
-    columnFilters,
-    globalFilter,
-    pagination.pageIndex,
-    pagination.pageSize,
-    sorting,
-  ]);
+    if (queryData) {
+      setData(queryData.content);
+      setRowCount(queryData.totalElements);
+    }
+  }, [queryData]);
 
   const handleRowClick = (rowId) => {
     // Implement row click handling if needed
@@ -230,7 +229,7 @@ const LatestInvoiceList = ({
         setColumnVisibility={setColumnVisibility}
         requiredColumns={requiredColumns}
         setGlobalFilter={setGlobalFilter}
-        fetchData={fetchLatestInvoiceDetails}
+        fetchData={refetch}
         showGenerateDeleteButtons={showGenerateDeleteButtons}
         showInvoiceMetrics={showInvoiceMetrics}
         showActionButtons={showActionButtons}
