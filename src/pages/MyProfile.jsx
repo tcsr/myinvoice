@@ -97,30 +97,56 @@ const MyProfile = () => {
     message: "",
     severity: "success",
   });
+  const [initialValues, setInitialValues] = useState({});
 
   const { handleSubmit, control, reset, formState: { errors } } = useForm({
     mode: 'onChange'
   });
 
+  // Mimic API call to fetch user details on component mount
   useEffect(() => {
-    if (userProfile) {
-      setProfileImage(userProfile.imageUrl);
-      reset({
-        firstName: userProfile.firstName,
-        lastName: userProfile.lastName,
-        email: userProfile.email,
-        phoneNumber: userProfile.phoneNumber || "",
-        street: userProfile.address?.street || "",
-        city: userProfile.address?.city || "",
-        state: userProfile.address?.state || "",
-        postalCode: userProfile.address?.postalCode || "",
-        country: userProfile.address?.country || "",
-        companyName: userProfile.company?.name || "",
-        position: userProfile.company?.position || "",
-        department: userProfile.company?.department || "",
-      });
-    }
-  }, [userProfile, reset]);
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/user/getUserDetails?username=chandra');
+        const userDetails = response.data;
+
+        setProfileImage(userDetails.imageUrl);
+        setInitialValues({
+          firstName: userDetails.firstName,
+          lastName: userDetails.lastName,
+          email: userDetails.email,
+          phoneNumber: userDetails.phoneNumber || "",
+          street: userDetails.address?.street || "",
+          city: userDetails.address?.city || "",
+          state: userDetails.address?.state || "",
+          postalCode: userDetails.address?.postalCode || "",
+          country: userDetails.address?.country || "",
+          companyName: userDetails.company?.name || "",
+          position: userDetails.company?.position || "",
+          department: userDetails.company?.department || "",
+        });
+
+        reset({
+          firstName: userDetails.firstName,
+          lastName: userDetails.lastName,
+          email: userDetails.email,
+          phoneNumber: userDetails.phoneNumber || "",
+          street: userDetails.address?.street || "",
+          city: userDetails.address?.city || "",
+          state: userDetails.address?.state || "",
+          postalCode: userDetails.address?.postalCode || "",
+          country: userDetails.address?.country || "",
+          companyName: userDetails.company?.name || "",
+          position: userDetails.company?.position || "",
+          department: userDetails.company?.department || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch user details", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [reset]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -141,7 +167,7 @@ const MyProfile = () => {
         profileImage: newProfileImage ? profileImage : userProfile.imageUrl
       };
 
-      await axios.put("/api/user/profile", profileData, {
+      await axios.post("/api/user/saveUserDetails", profileData, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -151,6 +177,9 @@ const MyProfile = () => {
         message: "Profile updated successfully",
         severity: "success",
       });
+
+      // Update initial values after successful save
+      setInitialValues(data);
     } catch (error) {
       console.error("Failed to update profile", error);
       setSnackbar({
@@ -162,24 +191,10 @@ const MyProfile = () => {
   };
 
   const handleCancelEdit = () => {
-    if (userProfile) {
-      reset({
-        firstName: userProfile.firstName,
-        lastName: userProfile.lastName,
-        email: userProfile.email,
-        phoneNumber: userProfile.phoneNumber || "",
-        street: userProfile.address?.street || "",
-        city: userProfile.address?.city || "",
-        state: userProfile.address?.state || "",
-        postalCode: userProfile.address?.postalCode || "",
-        country: userProfile.address?.country || "",
-        companyName: userProfile.company?.name || "",
-        position: userProfile.company?.position || "",
-        department: userProfile.company?.department || "",
-      });
-      setProfileImage(userProfile.imageUrl);
-      setNewProfileImage(null);
-    }
+    // Reset to initial values
+    reset(initialValues);
+    setProfileImage(userProfile.imageUrl);
+    setNewProfileImage(null);
     setEditMode(false);
   };
 
