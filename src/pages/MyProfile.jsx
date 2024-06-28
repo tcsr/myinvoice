@@ -27,7 +27,6 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   margin: "20px auto",
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: "#f9f9f9",
   [theme.breakpoints.down("sm")]: {
     width: "95%",
     padding: theme.spacing(2),
@@ -100,7 +99,21 @@ const MyProfile = () => {
   const [initialValues, setInitialValues] = useState({});
 
   const { handleSubmit, control, reset, formState: { errors } } = useForm({
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      companyName: "",
+      position: "",
+      department: "",
+    },
   });
 
   // Mimic API call to fetch user details on component mount
@@ -110,43 +123,34 @@ const MyProfile = () => {
         const response = await axios.get('http://localhost:3000/api/user/getUserDetails?username=chandra');
         const userDetails = response.data;
 
-        setProfileImage(userDetails.imageUrl);
-        setInitialValues({
-          firstName: userDetails.firstName,
-          lastName: userDetails.lastName,
-          email: userDetails.email,
-          phoneNumber: userDetails.phoneNumber || "",
-          street: userDetails.address?.street || "",
-          city: userDetails.address?.city || "",
-          state: userDetails.address?.state || "",
-          postalCode: userDetails.address?.postalCode || "",
-          country: userDetails.address?.country || "",
-          companyName: userDetails.company?.name || "",
-          position: userDetails.company?.position || "",
-          department: userDetails.company?.department || "",
-        });
+        const finalUserDetails = {
+          firstName: userDetails?.firstName || userProfile?.firstName || "",
+          lastName: userDetails?.lastName || userProfile?.lastName || "",
+          email: userDetails?.email || userProfile?.email || "",
+          phoneNumber: userDetails?.phoneNumber || "",
+          street: userDetails?.address?.street || "",
+          city: userDetails?.address?.city || "",
+          state: userDetails?.address?.state || "",
+          postalCode: userDetails?.address?.postalCode || "",
+          country: userDetails?.address?.country || "",
+          companyName: userDetails?.company?.name || "",
+          position: userDetails?.company?.position || "",
+          department: userDetails?.company?.department || "",
+        };
 
-        reset({
-          firstName: userDetails.firstName,
-          lastName: userDetails.lastName,
-          email: userDetails.email,
-          phoneNumber: userDetails.phoneNumber || "",
-          street: userDetails.address?.street || "",
-          city: userDetails.address?.city || "",
-          state: userDetails.address?.state || "",
-          postalCode: userDetails.address?.postalCode || "",
-          country: userDetails.address?.country || "",
-          companyName: userDetails.company?.name || "",
-          position: userDetails.company?.position || "",
-          department: userDetails.company?.department || "",
-        });
+        setProfileImage(userDetails?.imageUrl || userProfile?.imageUrl);
+        setInitialValues(finalUserDetails);
+
+        reset(finalUserDetails);
       } catch (error) {
         console.error("Failed to fetch user details", error);
       }
     };
 
-    fetchUserDetails();
-  }, [reset]);
+    if (userProfile) {
+      fetchUserDetails();
+    }
+  }, [reset, userProfile]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -212,9 +216,9 @@ const MyProfile = () => {
 
   const { username } = userProfile;
   const fullName =
-    userProfile.firstName && userProfile.lastName
-      ? `${userProfile.firstName} ${userProfile.lastName}`
-      : userProfile.firstName || userProfile.lastName || username || "";
+    initialValues.firstName && initialValues.lastName
+      ? `${initialValues.firstName} ${initialValues.lastName}`
+      : initialValues.firstName || initialValues.lastName || username || "";
 
   return (
     <ProfileCard>
@@ -250,7 +254,7 @@ const MyProfile = () => {
             <Typography variant="h5">{fullName}</Typography>
             <Box display="flex" alignItems="center">
               <MailOutlineIcon sx={{ marginRight: 1 }} />
-              <Typography color="textSecondary">{userProfile?.email}</Typography>
+              <Typography color="textSecondary">{initialValues.email}</Typography>
               {userProfile?.emailVerified && (
                 <VerifiedIcon sx={{ marginLeft: 1, color: 'green' }} />
               )}
@@ -323,7 +327,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -343,7 +347,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -370,7 +374,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -397,7 +401,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -418,7 +422,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -439,7 +443,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -460,7 +464,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -481,7 +485,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -502,7 +506,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -523,7 +527,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -544,7 +548,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
@@ -565,7 +569,7 @@ const MyProfile = () => {
               disabled={!editMode}
               InputProps={{
                 readOnly: !editMode,
-                style: !editMode ? { color: "rgba(0, 0, 0, 0.6)" } : {},
+                style: { color: "black" },
               }}
               onBlur={field.onBlur}
             />
