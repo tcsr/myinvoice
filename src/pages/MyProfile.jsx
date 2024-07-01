@@ -15,9 +15,9 @@ import { useForm, Controller } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import SaveIcon from '@mui/icons-material/Save';
-import ClearIcon from '@mui/icons-material/Clear';
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import SaveIcon from "@mui/icons-material/Save";
+import ClearIcon from "@mui/icons-material/Clear";
 import { UserDetailsContext } from "../context/UserDetailsContext";
 import UserAvatar from "../components/user/UserAvatar";
 import axios from "axios";
@@ -116,51 +116,71 @@ const MyProfile = () => {
     },
   });
 
-  // Mimic API call to fetch user details on component mount
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/user/getUserDetails?username=chandra');
+      const userDetails = response.data;
+
+      const finalUserDetails = {
+        firstName: userDetails?.firstName || userProfile?.firstName || "",
+        lastName: userDetails?.lastName || userProfile?.lastName || "",
+        email: userDetails?.email || userProfile?.email || "",
+        phoneNumber: userDetails?.phoneNumber || "",
+        street: userDetails?.address?.street || "",
+        city: userDetails?.address?.city || "",
+        state: userDetails?.address?.state || "",
+        postalCode: userDetails?.address?.postalCode || "",
+        country: userDetails?.address?.country || "",
+        companyName: userDetails?.company?.name || "",
+        position: userDetails?.company?.position || "",
+        department: userDetails?.company?.department || "",
+      };
+
+      setInitialValues(finalUserDetails);
+      reset(finalUserDetails);
+      
+      const imageResponse = await axios.get(`http://localhost:3000/api/user/getProfileImage?userName=chandra`);
+      setProfileImage(imageResponse.data.imageUrl || userProfile?.imageUrl);
+
+    } catch (error) {
+      console.error("Failed to fetch user details", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/user/getUserDetails?username=chandra');
-        const userDetails = response.data;
-
-        const finalUserDetails = {
-          firstName: userDetails?.firstName || userProfile?.firstName || "",
-          lastName: userDetails?.lastName || userProfile?.lastName || "",
-          email: userDetails?.email || userProfile?.email || "",
-          phoneNumber: userDetails?.phoneNumber || "",
-          street: userDetails?.address?.street || "",
-          city: userDetails?.address?.city || "",
-          state: userDetails?.address?.state || "",
-          postalCode: userDetails?.address?.postalCode || "",
-          country: userDetails?.address?.country || "",
-          companyName: userDetails?.company?.name || "",
-          position: userDetails?.company?.position || "",
-          department: userDetails?.company?.department || "",
-        };
-
-        setProfileImage(userDetails?.imageUrl || userProfile?.imageUrl);
-        setInitialValues(finalUserDetails);
-
-        reset(finalUserDetails);
-      } catch (error) {
-        console.error("Failed to fetch user details", error);
-      }
-    };
-
     if (userProfile) {
       fetchUserDetails();
     }
   }, [reset, userProfile]);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImage(reader.result);
-        setNewProfileImage(file);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const uploadResponse = await axios.post("/api/user/uploadProfileImage", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        
+        const imageUrl = uploadResponse.data.imageUrl;
+        setProfileImage(imageUrl);
+        setNewProfileImage(imageUrl);
+
+        setSnackbar({
+          open: true,
+          message: "Profile image updated successfully",
+          severity: "success",
+        });
+      } catch (error) {
+        console.error("Failed to upload profile image", error);
+        setSnackbar({
+          open: true,
+          message: "Failed to upload profile image",
+          severity: "error",
+        });
+      }
     }
   };
 
@@ -168,7 +188,7 @@ const MyProfile = () => {
     try {
       const profileData = {
         ...data,
-        profileImage: newProfileImage ? profileImage : userProfile.imageUrl
+        profileImage: newProfileImage || userProfile.imageUrl,
       };
 
       await axios.post("/api/user/saveUserDetails", profileData, {
@@ -182,8 +202,8 @@ const MyProfile = () => {
         severity: "success",
       });
 
-      // Update initial values after successful save
       setInitialValues(data);
+      fetchUserDetails(); // Call the function to fetch user details after profile update
     } catch (error) {
       console.error("Failed to update profile", error);
       setSnackbar({
@@ -195,7 +215,6 @@ const MyProfile = () => {
   };
 
   const handleCancelEdit = () => {
-    // Reset to initial values
     reset(initialValues);
     setProfileImage(userProfile.imageUrl);
     setNewProfileImage(null);
